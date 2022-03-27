@@ -2,9 +2,9 @@
 **Author: Sean Pesce**  
 
 <p align="center">
-<img align="center" title="Example Turkish translation (pre-alpha screenshot)" src="https://raw.githubusercontent.com/SeanPesce/DXMD-Translations/master/image/launcher_tr.png" alt="Example Turkish translation (pre-alpha screenshot)" width="450px">
+<img align="center" title="Example Turkish translation (pre-alpha screenshot)" src="https://raw.githubusercontent.com/SeanPesce/DXMD-Translations/master/image/launcher_tr.png?raw=true" alt="Example Turkish translation (pre-alpha screenshot)" width="450px">
 <br><br>
-<img align="center" title="Example Turkish translation (pre-alpha screenshot)" src="https://raw.githubusercontent.com/SeanPesce/DXMD-Translations/master/image/main_menu_tr.jpg" alt="Example Turkish translation (pre-alpha screenshot)" width="450px">
+<img align="center" title="Example Turkish translation (pre-alpha screenshot)" src="https://raw.githubusercontent.com/SeanPesce/DXMD-Translations/master/image/main_menu_tr.jpg?raw=true" alt="Example Turkish translation (pre-alpha screenshot)" width="450px">
 </p>  
 
 
