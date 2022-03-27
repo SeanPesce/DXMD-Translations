@@ -18,7 +18,7 @@ Copy **version.dll**, **DXMD_Mod.ini**, and **strings.json** into the `\retail\`
 ## Default key-binds  
 None yet.
   
-You can change the key-binds and default FoV values by navigating to your `\Deus Ex Mankind Divided\retail\` folder and editing `DXMD_Mod.ini`.  
+You can change key-binds and other settings by navigating to your `\Deus Ex Mankind Divided\retail\` folder and editing `DXMD_Mod.ini`.  
 
 ## **[Download the latest version here!](https://github.com/SeanPesce/DXMD-Translations/releases)**  
 
