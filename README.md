@@ -34,7 +34,7 @@ If you find any bugs, please contact me on [GitHub](https://github.com/SeanPesce
 
 
 ## Acknowledgements  
- * **[SinnerClown Çeviri](https://sinnerclownceviri.com/)**, the Turkish translation group that originally contacted me with this project idea. They're also responsible for the Turkish translation data set. The SinnerClown forum thread about this mod can be found (here)[https://sinnerclownceviri.com/threads/deus-ex-mankind-divided-tuerkce-yama-projemiz-baslamistir.870/].  
+ * **[SinnerClown Çeviri](https://sinnerclownceviri.com/)**, the Turkish translation group that originally contacted me with this project idea. They're also responsible for the Turkish translation data set. The SinnerClown forum thread about this mod can be found [here](https://sinnerclownceviri.com/threads/deus-ex-mankind-divided-tuerkce-yama-projemiz-baslamistir.870/).  
 
 
 ## License  
