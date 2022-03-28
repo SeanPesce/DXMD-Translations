@@ -19,6 +19,7 @@
 
 
 #define SP_IO_POWERSHELL_OUT_LAUNCH_CMD_ "powershell -NoLogo -Command \"$host.ui.RawUI.WindowTitle = '" + _title + "'; " \
+                                         "$OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding;" \
                                          "$host.ui.RawUI.BackgroundColor = '" + _bg_color + "'; " \
                                          "$host.ui.RawUI.ForegroundColor = '" + _fg_color + "'; " \
                                          "cls; " \

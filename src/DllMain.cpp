@@ -184,7 +184,7 @@ void init_settings()
     std::string exe_md5 = calculate_file_md5(sp::env::exe_path());
     debug.print(sp::env::exe_name() + " MD5: " + exe_md5 + "\n");
 
-    if (exe_md5 == "a227bc2145d592f0f945df9b882f96d8")
+    if (exe_md5 == "a227bc2145d592f0f945df9b882f96d8")  // v1.19-801.0 Steam
     {
         prehook_inject_addr = (void*)(dxmd_base + 0x805e513);
         prehook_ret = (void*)((uint64_t)prehook_inject_addr + 15);  // DXMD.exe+0x805E522
@@ -193,7 +193,16 @@ void init_settings()
         str_alloc_call_instruction = (void*)(dxmd_base + 0x36A101A);
         str_alloc_func = (void*)(dxmd_base + 0x314C0C0);
     }
-    /*else if (exe_md5 == "c1a85abd61e3d31db179801a27f56e12")
+    else if (exe_md5 == "3745fa30bf3f607a58775f818c5e0ac0")  // v1.19-801.0 GoG
+    {
+        prehook_inject_addr = NULL;
+        prehook_ret = NULL;
+        textlist_installer_func = (void*)(dxmd_base + 0x3656E0);
+        get_mem_mgr_func = (void*)(dxmd_base + 0x36A10);
+        str_alloc_call_instruction = (void*)(dxmd_base + 0x362F9B);
+        str_alloc_func = (void*)(dxmd_base + 0x2A740);
+    }
+    /*else if (exe_md5 == "c1a85abd61e3d31db179801a27f56e12")  // v1.19-801.0 (unknown platform)
     {
         // @TODO: VirtualProtect fails on this version of the executable. Why?
         prehook_inject_addr = (void*)(0x14805e513);

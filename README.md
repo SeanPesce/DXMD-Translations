@@ -9,7 +9,7 @@
 
 
 ## Overview  
-This mod enables string replacement in [Deus Ex: Mankind Divided](http://store.steampowered.com/app/337000) and [Deus Ex: Breach](http://store.steampowered.com/app/555450) to facilitate game translation to languages that aren't officially supported (e.g., Turkish). The framework loads in-game strings from a JSON file specified in the configuration, allowing anyone to create or modify their own translation set. The mod adds 30-60 seconds of load time when the game first starts, but should not have any other effects on performance.  
+This mod enables string replacement in [Deus Ex: Mankind Divided](http://store.steampowered.com/app/337000) and [Deus Ex: Breach](http://store.steampowered.com/app/555450) to facilitate game translation to languages that aren't officially supported (e.g., Turkish). The framework loads in-game strings from a JSON file specified in the configuration, allowing anyone to create or modify their own translation set.  
 
 ## Installation  
 Copy **version.dll**, **DXMD_Mod.ini**, and **strings.json** into the `\retail\` directory (usually `C:\Program Files (x86)\Steam\SteamApps\common\Deus Ex Mankind Divided\retail`).  

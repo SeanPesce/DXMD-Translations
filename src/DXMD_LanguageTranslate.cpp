@@ -96,19 +96,12 @@ void load_translation_json(const char* fpath)
         return;
     }
 
-    sp::io::ps_ostream progress_display("Loading...");
-    progress_display.start();
-    progress_display.print("+----------------------------+\r\n|    DXMD Translation Mod    |\r\n|     Author: Sean Pesce     |\r\n+----------------------------+\r\nCompiled: " __DATE__ "  " __TIME__ "\r\n\r\n");
-    progress_display.print("Loading " + json["language_long"].get<std::string>() + " translation data from " + std::string(fpath) + "\n");
-
     // Convert JSON data to C++ map
     size_t file_count = json["files"].size();
     for (size_t i = 0; i < file_count; i++)
     {
         auto f = json["files"][i];
         size_t str_count = f["content"].size();
-        //debug.print("Parsing resource: " + f["resource"].get<std::string>() + "\n");
-        progress_display.print("Progress: " + std::to_string(i) + "/" + std::to_string(file_count) + "\r");
         std::map<uint32_t, std::string> textlist_data;
 
         for (size_t j = 0; j < str_count; j++)
@@ -119,7 +112,7 @@ void load_translation_json(const char* fpath)
 
         translation_data.insert({ f["id"].get<uint64_t>(), textlist_data });
     }
-    progress_display.terminate();
+    debug.print("Finished loading translation data.\n");
 }
 extern "C" void* load_translation_json_ptr = &load_translation_json;
 
