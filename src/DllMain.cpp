@@ -58,7 +58,7 @@ BOOL WINAPI DllMain(HINSTANCE hinst_dll, DWORD fdw_reason, LPVOID lpv_reserved)
         dxmd_base = NULL;
         dxmd_size = 0;
         debug.print("Obtaining module base & size...\n");
-        get_module_size(GetModuleHandle(NULL), (LPVOID*)&dxmd_base, &dxmd_size); // Obtain DXMD base address & size
+        get_module_size(GetModuleHandle(NULL), (LPVOID*)&dxmd_base, &dxmd_size); // Obtain DXMD.exe base address & size
         get_dll_chain();
 
         debug.print("Finished loading settings.\n");
@@ -74,6 +74,9 @@ BOOL WINAPI DllMain(HINSTANCE hinst_dll, DWORD fdw_reason, LPVOID lpv_reserved)
         debug.print("Loading exported funcs...\n");
         for (int i = 0; i < DLL_EXPORT_COUNT_; i++) {
             export_locs[i] = (UINT_PTR)GetProcAddress(dll_chain_instance, import_names[i]);
+            std::stringstream strstr;
+            strstr << std::hex << export_locs[i];
+            debug.print(std::string(import_names[i]) + " @ " + strstr.str() + "\n");
         }
 
         debug.print("Initializing keybinds & additional settings...\n");
@@ -136,7 +139,7 @@ void load_original_dll()
 }
 
 
-// Parses DXMD_FOV.ini for intialization settings
+// Parses configuration file for DLL intialization settings
 int get_dll_chain()
 {
     debug.print("Initializing DLL settings...\n");
@@ -162,7 +165,7 @@ int get_dll_chain()
         debug.print("    No chain specified.\n");
         return 1; // Return 1 if config file or DLL_Chain entry could not be located
     }
-    return 0; // Return 0 on success
+    return 0; // Success
 }
 
 
@@ -171,8 +174,8 @@ extern "C" void* prehook_inject_addr;
 extern "C" void* prehook_ret;
 extern "C" void* textlist_installer_func;
 extern "C" void* get_mem_mgr_func;
-extern void* str_alloc_call_instruction;
-extern "C" void* str_alloc_func;
+extern void* textlist_str_alloc_call_instruction;
+extern "C" void* textlist_str_alloc_func;
 
 /**
  *  Determine keybinds and global configuration settings for the plugin
@@ -190,8 +193,8 @@ void init_settings()
         prehook_ret = (void*)((uint64_t)prehook_inject_addr + 15);  // DXMD.exe+0x805E522
         textlist_installer_func = (void*)(dxmd_base + 0x36A39C0);
         get_mem_mgr_func = (void*)(dxmd_base + 0x3159300);
-        str_alloc_call_instruction = (void*)(dxmd_base + 0x36A101A);
-        str_alloc_func = (void*)(dxmd_base + 0x314C0C0);
+        textlist_str_alloc_call_instruction = (void*)(dxmd_base + 0x36A101A);
+        textlist_str_alloc_func = (void*)(dxmd_base + 0x314C0C0);
     }
     else if (exe_md5 == "3745fa30bf3f607a58775f818c5e0ac0")  // v1.19-801.0 GoG
     {
@@ -199,8 +202,8 @@ void init_settings()
         prehook_ret = NULL;
         textlist_installer_func = (void*)(dxmd_base + 0x3656E0);
         get_mem_mgr_func = (void*)(dxmd_base + 0x36A10);
-        str_alloc_call_instruction = (void*)(dxmd_base + 0x362F9B);
-        str_alloc_func = (void*)(dxmd_base + 0x2A740);
+        textlist_str_alloc_call_instruction = (void*)(dxmd_base + 0x362F9B);
+        textlist_str_alloc_func = (void*)(dxmd_base + 0x2A740);
     }
     /*else if (exe_md5 == "c1a85abd61e3d31db179801a27f56e12")  // v1.19-801.0 (unknown platform)
     {
@@ -216,8 +219,8 @@ void init_settings()
         NTSTATUS status = NtProtectVirtualMemory(GetCurrentProcess(), &temp, &sz, PAGE_EXECUTE_READWRITE, old_protect_ptr);
         textlist_installer_func = (void*)(0x1436A39C0);
         get_mem_mgr_func = (void*)(0x143159300);
-        str_alloc_call_instruction = (void*)(0x1436A101A);
-        str_alloc_func = (void*)(0x14314C0C0);
+        textlist_str_alloc_call_instruction = (void*)(0x1436A101A);
+        textlist_str_alloc_func = (void*)(0x14314C0C0);
     }*/
     else
     {
@@ -245,27 +248,29 @@ void init_settings()
 }
 
 
-extern "C" uint64_t resource_id;
-extern "C" uint32_t string_id;
+extern "C" uint64_t textlist_res_id;
+extern "C" uint32_t textlist_str_id;
 
 
 DWORD WINAPI async_thread(LPVOID param)
 {
     bool running = true;
 
-    debug.print("Starting FoV modifier loop...\n");
+    debug.print("Starting asynchronous loop...\n");
     while (running)
     {
         static uint64_t last_res_id = -1;
         static uint32_t last_str_id = -1;
-        if (resource_id != last_res_id) {
-            debug.print(sp::str::format("Loaded resource with ID: %" PRIx64 "\n", resource_id));
+        if (textlist_res_id != last_res_id)
+        {
+            debug.print(sp::str::format("Loaded resource with ID: %" PRIx64 "\n", textlist_res_id));
         }
-        if (string_id != last_str_id) {
-            debug.print(sp::str::format("Loaded string with ID: %" PRIx64 "\n", string_id));
+        if (textlist_str_id != last_str_id)
+        {
+            debug.print(sp::str::format("Loaded string with ID: %" PRIx64 "\n", textlist_str_id));
         }
-        last_res_id = resource_id;
-        last_str_id = string_id;
+        last_res_id = textlist_res_id;
+        last_str_id = textlist_str_id;
         
         Sleep(100);
     }

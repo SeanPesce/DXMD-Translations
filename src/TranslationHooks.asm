@@ -75,7 +75,7 @@ hook_installer proc
 hook_installer endp
 
 
-extern resource_id:QWORD
+extern textlist_res_id:QWORD
 extern get_mem_mgr_func:QWORD
 extern textlist_installer_hook_ret:QWORD
 
@@ -87,7 +87,7 @@ textlist_installer_hook proc
     mov rax, QWORD PTR [rax]
     add rax, 8
     mov rax, QWORD PTR [rax]
-    mov QWORD PTR [resource_id], rax
+    mov QWORD PTR [textlist_res_id], rax
     pop rax
 
     ; Original function start
@@ -103,31 +103,30 @@ textlist_installer_hook endp
 
 
 extern translations_enabled:BYTE
-extern load_translation_json_ptr:QWORD
-extern string_id:DWORD
-extern string_len:QWORD
-extern string_buf_ptr:QWORD
-extern resource_reader:QWORD
-extern str_alloc_func:QWORD
-extern str_alloc_hook_ret:QWORD
-extern store_string_info_ptr:QWORD
+extern textlist_str_id:DWORD
+extern textlist_str_len:QWORD
+extern textlist_str_buf_ptr:QWORD
+extern textlist_res_reader:QWORD
+extern textlist_str_alloc_func:QWORD
+extern textlist_str_alloc_hook_ret:QWORD
+extern store_textlist_str_info_ptr:QWORD
 
-str_alloc_hook proc
+textlist_str_alloc_hook proc
     ; Store pointer to resource reader
-    mov QWORD PTR [resource_reader], r15
+    mov QWORD PTR [textlist_res_reader], r15
     
     ; Restore pointer to resource reader
-    mov r15, QWORD PTR [resource_reader]
+    mov r15, QWORD PTR [textlist_res_reader]
 
     ; Store current string ID, length, and pointer
     push rax
     ; uint32_t rdi == Original string ID pointer
     mov eax, DWORD PTR [rdi]
-    mov DWORD PTR [string_id], eax
+    mov DWORD PTR [textlist_str_id], eax
     ; uint64_t r8 == Original string length
-    mov QWORD PTR [string_len], r8
+    mov QWORD PTR [textlist_str_len], r8
     ; uint64_t rdx == Original string pointer
-    mov QWORD PTR [string_buf_ptr], rdx
+    mov QWORD PTR [textlist_str_buf_ptr], rdx
     pop rax
 
     ; Check if translations are disabled
@@ -155,7 +154,7 @@ str_alloc_hook proc
     push rbp
 
     ; Load translated string
-    call store_string_info_ptr
+    call store_textlist_str_info_ptr
 
     ; Restore registers
     pop rbp
@@ -177,20 +176,20 @@ str_alloc_hook proc
     lbl_overwrite_string_data:
     ; Overwrite pointer and length with translated string/length
     ; uint64_t r8 == Original string length
-    mov r8, QWORD PTR [string_len]
+    mov r8, QWORD PTR [textlist_str_len]
     ; uint64_t rdx == Original string pointer
-    mov rdx, QWORD PTR [string_buf_ptr]
+    mov rdx, QWORD PTR [textlist_str_buf_ptr]
 
     ; Original instructions
-    call str_alloc_func
+    call textlist_str_alloc_func
     lea r8, [rsp+48]  ; 0x30
     lea rdx, [rsp+32]  ; 0x20
     
     ; Restore pointer to resource reader
-    mov r15, QWORD PTR [resource_reader]
+    mov r15, QWORD PTR [textlist_res_reader]
 
     ; Jump back to original function
-    jmp str_alloc_hook_ret
-str_alloc_hook endp
+    jmp textlist_str_alloc_hook_ret
+textlist_str_alloc_hook endp
 
 end

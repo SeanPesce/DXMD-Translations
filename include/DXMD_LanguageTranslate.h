@@ -21,12 +21,12 @@ void init_modifiers();
 
 extern "C" uint8_t translations_enabled = 1;
 
-extern "C" uint64_t resource_id = NULL;
-extern "C" uint32_t string_id = NULL;
-uint8_t string_buf[1048576];  // 1MB
-extern "C" void* string_buf_ptr = &string_buf;
-extern "C" uint64_t string_len = NULL;
-extern "C" void* resource_reader = NULL;  // Temporary storage for pointer to TextList resource reader
+extern "C" uint64_t textlist_res_id = NULL;
+extern "C" uint32_t textlist_str_id = NULL;
+extern "C" uint64_t textlist_str_len = NULL;
+uint8_t textlist_str_buf[1048576];  // 1MB
+extern "C" void* textlist_str_buf_ptr = &textlist_str_buf;
+extern "C" void* textlist_res_reader = NULL;  // Temporary storage for pointer to TextList resource reader
 
 
 std::string calculate_file_md5(std::string& fpath, size_t read_sz = 1048576 /* 1MB */);

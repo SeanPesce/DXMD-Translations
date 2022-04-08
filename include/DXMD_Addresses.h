@@ -17,10 +17,10 @@ extern "C" void* textlist_installer_hook_ret = NULL;
 extern "C" void* get_mem_mgr_func = (void*)0x143159300;  // AoB (after deobfuscation): 48 83 EC 28 8B 05 ?? ?? ?? ?? A8 01 75 1E 83 C8 01
 
 
-void* str_alloc_call_instruction = (void*)0x1436A101A;  // AoB (Steam; after deobfuscation): E8 ?? ?? ?? ?? 4C 8D 44 24 30 48 8D 54 24 20 48 89 C1 E8 ?? ?? ?? ?? 48 8D 54 24 50
+void* textlist_str_alloc_call_instruction = (void*)0x1436A101A;  // AoB (Steam; after deobfuscation): E8 ?? ?? ?? ?? 4C 8D 44 24 30 48 8D 54 24 20 48 89 C1 E8 ?? ?? ?? ?? 48 8D 54 24 50
                                                         //                              GoG: e8 ?? ?? ?? ?? 4c 8d 44 24 30 48 8d 54 24 20 48 8b c8 e8 ?? ?? ?? ?? 48 8d 54 24 50 
-extern "C" void* str_alloc_func = (void*)0x14314C0C0;  // AoB (after deobfuscation): 48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 48 8D 05 ?? ?? ?? ?? 48 89 D3 49 8D 50 01
-extern "C" void* str_alloc_hook_ret = NULL;
+extern "C" void* textlist_str_alloc_func = (void*)0x14314C0C0;  // AoB (after deobfuscation): 48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 48 8D 05 ?? ?? ?? ?? 48 89 D3 49 8D 50 01
+extern "C" void* textlist_str_alloc_hook_ret = NULL;
 
 
 #endif // SP_DXMD_MEMORY_ADDRESSES_H_

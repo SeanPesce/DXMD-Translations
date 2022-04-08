@@ -23,38 +23,44 @@
 
 extern sp::io::ps_ostream debug;
 
-extern "C" uint64_t resource_id;
-extern "C" uint32_t string_id;
-extern uint8_t string_buf[1048576];
-extern "C" void* string_buf_ptr;
-extern "C" uint64_t string_len;
+extern "C" uint64_t textlist_res_id;
+extern "C" uint32_t textlist_str_id;
+extern uint8_t textlist_str_buf[1048576];
+extern "C" void* textlist_str_buf_ptr;
+extern "C" uint64_t textlist_str_len;
 
 
-std::map<uint64_t, std::map<uint32_t, std::string>> translation_data;
+std::map<uint64_t, std::map<uint32_t, std::string>> textlist_translation_data;
 
 
 extern "C" void hook_installer();
 extern "C" void textlist_installer_hook();
-extern "C" void str_alloc_hook();
+extern "C" void textlist_str_alloc_hook();
 
 
 // This function was developed using code from Franc[e]sco (from ccplz.net)
 BOOL get_module_size(HMODULE hmodule, LPVOID* lplp_base, PDWORD64 lpdw_size)
 {
-    if (hmodule == GetModuleHandle(NULL)) {
+    if (hmodule == GetModuleHandle(NULL))
+    {
         PIMAGE_NT_HEADERS pImageNtHeaders = ImageNtHeader((PVOID)hmodule);
 
         if (pImageNtHeaders == NULL)
+        {
             return FALSE;
+        }
 
         *lplp_base = (LPVOID)hmodule;
         *lpdw_size = pImageNtHeaders->OptionalHeader.SizeOfImage;
     }
-    else {
+    else
+    {
         MODULEINFO  ModuleInfo;
 
         if (!GetModuleInformation(GetCurrentProcess(), hmodule, &ModuleInfo, sizeof(MODULEINFO)))
+        {
             return FALSE;
+        }
 
         *lplp_base = ModuleInfo.lpBaseOfDll;
         *lpdw_size = ModuleInfo.SizeOfImage;
@@ -96,11 +102,13 @@ void load_translation_json(const char* fpath)
         return;
     }
 
+    textlist_translation_data = std::map<uint64_t, std::map<uint32_t, std::string>>();
+
     // Convert JSON data to C++ map
-    size_t file_count = json["files"].size();
+    size_t file_count = json["textlists"].size();
     for (size_t i = 0; i < file_count; i++)
     {
-        auto f = json["files"][i];
+        auto f = json["textlists"][i];
         size_t str_count = f["content"].size();
         std::map<uint32_t, std::string> textlist_data;
 
@@ -110,21 +118,20 @@ void load_translation_json(const char* fpath)
             textlist_data.insert({ s["id"].get<uint32_t>(), s["string"].get<std::string>() });
         }
 
-        translation_data.insert({ f["id"].get<uint64_t>(), textlist_data });
+        textlist_translation_data.insert({ f["id"].get<uint64_t>(), textlist_data });
     }
     debug.print("Finished loading translation data.\n");
 }
-extern "C" void* load_translation_json_ptr = &load_translation_json;
 
 
 // Returns 0 if the string was found; returns 1 otherwise
 extern "C" int get_translation_string(uint64_t res_id, uint32_t str_id, std::string& out)
 {
     //debug.print("Loading string: " + std::to_string(res_id) + "->" + std::to_string(str_id) + "\n");
-    if (translation_data.find(res_id) != translation_data.end())
+    if (textlist_translation_data.find(res_id) != textlist_translation_data.end())
     {
         //debug.print("Found resource ID.\n");
-        auto textlist_data = translation_data[res_id];
+        auto textlist_data = textlist_translation_data[res_id];
         if (textlist_data.find(str_id) != textlist_data.end())
         {
             //debug.print("Loading string: " + std::to_string(str_id) + "\n");
@@ -142,7 +149,7 @@ extern "C" int get_translation_string(uint64_t res_id, uint32_t str_id, std::str
 extern "C" void install_translation_hooks()
 {
     sp::mem::code::x64::inject_jmp_14b(textlist_installer_func, &textlist_installer_hook_ret, 4, textlist_installer_hook);
-    sp::mem::code::x64::inject_jmp_14b(str_alloc_call_instruction, &str_alloc_hook_ret, 1, str_alloc_hook);
+    sp::mem::code::x64::inject_jmp_14b(textlist_str_alloc_call_instruction, &textlist_str_alloc_hook_ret, 1, textlist_str_alloc_hook);
 }
 extern "C" void* install_translation_hooks_ptr = &install_translation_hooks;
 
@@ -167,33 +174,33 @@ void install_pre_hook()
 
 
 // Called from TextList loader hook; stores translated string information for later replacement
-extern "C" void store_string_info()
+extern "C" void store_textlist_str_info()
 {
     std::string tmp_str;
-    int retval = get_translation_string(resource_id, string_id, tmp_str);
+    int retval = get_translation_string(textlist_res_id, textlist_str_id, tmp_str);
     if (retval)
     {
         // String was not found; don't change original string information
-        string_buf[0] = 0;
+        textlist_str_buf[0] = 0;
         return;
     }
 
     // String was found
-    string_buf_ptr = &string_buf;
-    string_len = tmp_str.size();
-    memcpy_s(string_buf, sizeof(string_buf), tmp_str.c_str(), tmp_str.size());
+    textlist_str_buf_ptr = &textlist_str_buf;
+    textlist_str_len = tmp_str.size();
+    memcpy_s(textlist_str_buf, sizeof(textlist_str_buf), tmp_str.c_str(), tmp_str.size());
 
     // Probably not necessary, but null-terminate the string just in case
-    if (tmp_str.size() < sizeof(string_buf))
+    if (tmp_str.size() < sizeof(textlist_str_buf))
     {
-        string_buf[tmp_str.size()] = 0;
+        textlist_str_buf[tmp_str.size()] = 0;
     }
     else
     {
-        string_buf[sizeof(string_buf) - 1] = 0;
+        textlist_str_buf[sizeof(textlist_str_buf) - 1] = 0;
     }
 }
-extern "C" void* store_string_info_ptr = &store_string_info;
+extern "C" void* store_textlist_str_info_ptr = &store_textlist_str_info;
 
 
 std::string calculate_file_md5(std::string& fpath, size_t read_sz)

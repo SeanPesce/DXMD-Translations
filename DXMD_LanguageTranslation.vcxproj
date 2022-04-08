@@ -166,7 +166,7 @@
   <ItemGroup>
     <MASM Include="src\TranslationHooks.asm" />
     <None Include="src\Exports.def" />
-    <MASM Include="src\Hooks.asm" />
+    <MASM Include="src\Exports.asm" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\DXMD_Addresses.h" />
