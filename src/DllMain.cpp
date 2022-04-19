@@ -76,7 +76,7 @@ BOOL WINAPI DllMain(HINSTANCE hinst_dll, DWORD fdw_reason, LPVOID lpv_reserved)
             export_locs[i] = (UINT_PTR)GetProcAddress(dll_chain_instance, import_names[i]);
             std::stringstream strstr;
             strstr << std::hex << export_locs[i];
-            debug.print(std::string(import_names[i]) + " @ " + strstr.str() + "\n");
+            debug.print("    " + std::string(import_names[i]) + " @ " + strstr.str() + "\n");
         }
 
         debug.print("Initializing keybinds & additional settings...\n");
@@ -176,6 +176,8 @@ extern "C" void* textlist_installer_func;
 extern "C" void* get_mem_mgr_func;
 extern void* textlist_str_alloc_call_instruction;
 extern "C" void* textlist_str_alloc_func;
+extern "C" void* loadingscreen_startsubs_func;
+extern "C" void* uielement_playvid_func;
 
 /**
  *  Determine keybinds and global configuration settings for the plugin
@@ -189,21 +191,29 @@ void init_settings()
 
     if (exe_md5 == "a227bc2145d592f0f945df9b882f96d8")  // v1.19-801.0 Steam
     {
-        prehook_inject_addr = (void*)(dxmd_base + 0x805e513);
+        prehook_inject_addr = (void*)(dxmd_base + 0x805E513);
         prehook_ret = (void*)((uint64_t)prehook_inject_addr + 15);  // DXMD.exe+0x805E522
-        textlist_installer_func = (void*)(dxmd_base + 0x36A39C0);
         get_mem_mgr_func = (void*)(dxmd_base + 0x3159300);
+
+        textlist_installer_func = (void*)(dxmd_base + 0x36A39C0);
         textlist_str_alloc_call_instruction = (void*)(dxmd_base + 0x36A101A);
         textlist_str_alloc_func = (void*)(dxmd_base + 0x314C0C0);
+
+        loadingscreen_startsubs_func = (void*)(dxmd_base + 0x42DB5D0);
+        uielement_playvid_func = (void*)(dxmd_base + 0x4859070);
     }
     else if (exe_md5 == "3745fa30bf3f607a58775f818c5e0ac0")  // v1.19-801.0 GoG
     {
         prehook_inject_addr = NULL;
         prehook_ret = NULL;
-        textlist_installer_func = (void*)(dxmd_base + 0x3656E0);
         get_mem_mgr_func = (void*)(dxmd_base + 0x36A10);
+
+        textlist_installer_func = (void*)(dxmd_base + 0x3656E0);
         textlist_str_alloc_call_instruction = (void*)(dxmd_base + 0x362F9B);
         textlist_str_alloc_func = (void*)(dxmd_base + 0x2A740);
+
+        loadingscreen_startsubs_func = (void*)(dxmd_base + 0xED7080);
+        uielement_playvid_func = (void*)(dxmd_base + 0x141B1E0);
     }
     /*else if (exe_md5 == "c1a85abd61e3d31db179801a27f56e12")  // v1.19-801.0 (unknown platform)
     {
@@ -250,6 +260,7 @@ void init_settings()
 
 extern "C" uint64_t textlist_res_id;
 extern "C" uint32_t textlist_str_id;
+extern "C" uint64_t video_res_id;
 
 
 DWORD WINAPI async_thread(LPVOID param)
@@ -261,6 +272,7 @@ DWORD WINAPI async_thread(LPVOID param)
     {
         static uint64_t last_res_id = -1;
         static uint32_t last_str_id = -1;
+        static uint64_t last_video_id = -1;
         if (textlist_res_id != last_res_id)
         {
             debug.print(sp::str::format("Loaded resource with ID: %" PRIx64 "\n", textlist_res_id));
@@ -269,8 +281,13 @@ DWORD WINAPI async_thread(LPVOID param)
         {
             debug.print(sp::str::format("Loaded string with ID: %" PRIx64 "\n", textlist_str_id));
         }
+        if (video_res_id != last_video_id)
+        {
+            debug.print(sp::str::format("Loaded video with ID: %" PRIx64 "\n", video_res_id));
+        }
         last_res_id = textlist_res_id;
         last_str_id = textlist_str_id;
+        last_video_id = video_res_id;
         
         Sleep(100);
     }

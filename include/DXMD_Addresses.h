@@ -23,4 +23,10 @@ extern "C" void* textlist_str_alloc_func = (void*)0x14314C0C0;  // AoB (after de
 extern "C" void* textlist_str_alloc_hook_ret = NULL;
 
 
+extern "C" void* loadingscreen_startsubs_func = (void*)0x1442DB5D0;  // AoB (after deobfuscation): 48 89 5c 24 08 48 89 74 24 10 57 48 83 ec ?? 48 ?? ?? 48 ?? ?? ?? ?? e8
+extern "C" void* loadingscreen_video_id_hook_ret = NULL;
+extern "C" void* uielement_playvid_func = (void*)0x144859070;  // AoB (after deobfuscation): 48 89 5c 24 10 48 89 74 24 18 57 48 83 ec 70 48 ?? ?? ?? ?? ?? ?? bb 
+extern "C" void* uielement_video_id_hook_ret = NULL;
+
+
 #endif // SP_DXMD_MEMORY_ADDRESSES_H_

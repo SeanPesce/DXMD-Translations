@@ -25,7 +25,7 @@ extern sp::io::ps_ostream debug;
 
 extern "C" uint64_t textlist_res_id;
 extern "C" uint32_t textlist_str_id;
-extern uint8_t textlist_str_buf[1048576];
+extern uint8_t textlist_str_buf[_TEXTLIST_STR_BUF_LEN];
 extern "C" void* textlist_str_buf_ptr;
 extern "C" uint64_t textlist_str_len;
 
@@ -36,6 +36,8 @@ std::map<uint64_t, std::map<uint32_t, std::string>> textlist_translation_data;
 extern "C" void hook_installer();
 extern "C" void textlist_installer_hook();
 extern "C" void textlist_str_alloc_hook();
+extern "C" void loadingscreen_video_id_hook();
+extern "C" void uielement_video_id_hook();
 
 
 // This function was developed using code from Franc[e]sco (from ccplz.net)
@@ -148,8 +150,13 @@ extern "C" int get_translation_string(uint64_t res_id, uint32_t str_id, std::str
 // Install hooks in TextList loader and language string allocator
 extern "C" void install_translation_hooks()
 {
+    // TextList hooks
     sp::mem::code::x64::inject_jmp_14b(textlist_installer_func, &textlist_installer_hook_ret, 4, textlist_installer_hook);
     sp::mem::code::x64::inject_jmp_14b(textlist_str_alloc_call_instruction, &textlist_str_alloc_hook_ret, 1, textlist_str_alloc_hook);
+
+    // Video subtitle hooks
+    sp::mem::code::x64::inject_jmp_14b(loadingscreen_startsubs_func, &loadingscreen_video_id_hook_ret, 1, loadingscreen_video_id_hook);
+    sp::mem::code::x64::inject_jmp_14b(uielement_playvid_func, &uielement_video_id_hook_ret, 1, uielement_video_id_hook);
 }
 extern "C" void* install_translation_hooks_ptr = &install_translation_hooks;
 

@@ -16,6 +16,9 @@
 #include "DXMD_Addresses.h"
 
 
+#define _TEXTLIST_STR_BUF_LEN 1048576  // 1MB
+
+
 void init_settings();
 void init_modifiers();
 
@@ -24,9 +27,12 @@ extern "C" uint8_t translations_enabled = 1;
 extern "C" uint64_t textlist_res_id = NULL;
 extern "C" uint32_t textlist_str_id = NULL;
 extern "C" uint64_t textlist_str_len = NULL;
-uint8_t textlist_str_buf[1048576];  // 1MB
+uint8_t textlist_str_buf[_TEXTLIST_STR_BUF_LEN];
 extern "C" void* textlist_str_buf_ptr = &textlist_str_buf;
 extern "C" void* textlist_res_reader = NULL;  // Temporary storage for pointer to TextList resource reader
+
+
+extern "C" uint64_t video_res_id = NULL;
 
 
 std::string calculate_file_md5(std::string& fpath, size_t read_sz = 1048576 /* 1MB */);

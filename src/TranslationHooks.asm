@@ -192,4 +192,49 @@ textlist_str_alloc_hook proc
     jmp textlist_str_alloc_hook_ret
 textlist_str_alloc_hook endp
 
+
+extern video_res_id:QWORD
+extern loadingscreen_video_id_hook_ret:QWORD
+
+loadingscreen_video_id_hook proc
+    ; Store video ID
+    push rax
+    mov rax, rcx
+    add rax, 152  ; 0x98
+    mov rax, QWORD PTR [rax]
+    mov QWORD PTR [video_res_id], rax
+    pop rax
+
+    ; Original function start
+    mov QWORD PTR [rsp+8], rbx
+    mov QWORD PTR [rsp+16], rsi
+    push rdi
+    sub rsp, 96  ; 0x60
+
+    ; Jump back to original function
+    jmp loadingscreen_video_id_hook_ret
+loadingscreen_video_id_hook endp
+
+
+extern uielement_video_id_hook_ret:QWORD
+
+uielement_video_id_hook proc
+    ; Store video ID
+    push rax
+    mov rax, rcx
+    add rax, 224  ; 0xe0
+    mov rax, QWORD PTR [rax]
+    mov QWORD PTR [video_res_id], rax
+    pop rax
+
+    ; Original function start
+    mov QWORD PTR [rsp+16], rbx
+    mov QWORD PTR [rsp+24], rsi
+    push rdi
+    sub rsp, 112  ; 0x70
+
+    ; Jump back to original function
+    jmp uielement_video_id_hook_ret
+uielement_video_id_hook endp
+
 end
