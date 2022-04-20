@@ -84,7 +84,7 @@ BOOL WINAPI DllMain(HINSTANCE hinst_dll, DWORD fdw_reason, LPVOID lpv_reserved)
         debug.print("Finished reading keybinds & settings.\n");
 
         // Initialize thread(s)
-        debug.print("Initializing FoV changer thread...\n");
+        debug.print("Initializing async thread...\n");
         async_thread_handle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)&async_thread, 0, 0, 0);
     } else if (fdw_reason == DLL_PROCESS_DETACH) {
         debug.print("Detaching from process.\n");
@@ -177,7 +177,12 @@ extern "C" void* get_mem_mgr_func;
 extern void* textlist_str_alloc_call_instruction;
 extern "C" void* textlist_str_alloc_func;
 extern "C" void* loadingscreen_startsubs_func;
+extern "C" void* loadingscreen_startsubs_get_subs_data_instr;
+extern "C" void* str_eq_operator_func;
 extern "C" void* uielement_playvid_func;
+extern "C" void* submgr_startsubs_get_subs_data_instr;
+extern "C" void* vidscreen_init_func;
+extern "C" void* menuscreen_init_func;
 
 /**
  *  Determine keybinds and global configuration settings for the plugin
@@ -200,7 +205,12 @@ void init_settings()
         textlist_str_alloc_func = (void*)(dxmd_base + 0x314C0C0);
 
         loadingscreen_startsubs_func = (void*)(dxmd_base + 0x42DB5D0);
+        loadingscreen_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x42DB68A);
+        str_eq_operator_func = (void*)(dxmd_base + 0x3148340);
         uielement_playvid_func = (void*)(dxmd_base + 0x4859070);
+        submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x36A5B67);
+        vidscreen_init_func = (void*)(dxmd_base + 0x475C1F0);
+        menuscreen_init_func = (void*)(dxmd_base + 0x3B3B540);
     }
     else if (exe_md5 == "3745fa30bf3f607a58775f818c5e0ac0")  // v1.19-801.0 GoG
     {
@@ -213,7 +223,12 @@ void init_settings()
         textlist_str_alloc_func = (void*)(dxmd_base + 0x2A740);
 
         loadingscreen_startsubs_func = (void*)(dxmd_base + 0xED7080);
+        loadingscreen_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0xED713D);
+        str_eq_operator_func = (void*)(dxmd_base + 0x26D60);
         uielement_playvid_func = (void*)(dxmd_base + 0x141B1E0);
+        submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x3676E7);
+        vidscreen_init_func = (void*)(dxmd_base + 0x1324850);
+        menuscreen_init_func = (void*)(dxmd_base + 0x7AD3A0);
     }
     /*else if (exe_md5 == "c1a85abd61e3d31db179801a27f56e12")  // v1.19-801.0 (unknown platform)
     {
@@ -275,13 +290,13 @@ DWORD WINAPI async_thread(LPVOID param)
         static uint64_t last_video_id = -1;
         if (textlist_res_id != last_res_id)
         {
-            debug.print(sp::str::format("Loaded resource with ID: %" PRIx64 "\n", textlist_res_id));
+            //debug.print(sp::str::format("Loaded resource with ID: %" PRIx64 "\n", textlist_res_id));
         }
         if (textlist_str_id != last_str_id)
         {
-            debug.print(sp::str::format("Loaded string with ID: %" PRIx64 "\n", textlist_str_id));
+            //debug.print(sp::str::format("Loaded string with ID: %" PRIx64 "\n", textlist_str_id));
         }
-        if (video_res_id != last_video_id)
+        if (video_res_id != last_video_id && video_res_id  != 0xffffffffffffffff  && video_res_id != 0)
         {
             debug.print(sp::str::format("Loaded video with ID: %" PRIx64 "\n", video_res_id));
         }

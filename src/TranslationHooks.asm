@@ -205,6 +205,9 @@ loadingscreen_video_id_hook proc
     mov QWORD PTR [video_res_id], rax
     pop rax
 
+    ; Update flag that indicates whether a non-loading-screen video is playing
+    mov BYTE PTR [playing_video_no_load_screen], 0
+
     ; Original function start
     mov QWORD PTR [rsp+8], rbx
     mov QWORD PTR [rsp+16], rsi
@@ -214,6 +217,162 @@ loadingscreen_video_id_hook proc
     ; Jump back to original function
     jmp loadingscreen_video_id_hook_ret
 loadingscreen_video_id_hook endp
+
+
+extern loadingscreen_subs_data_hook_ret:QWORD
+extern submgr_startsubs_data_hook_ret:QWORD
+extern subtitles_zstr_buf_ptr:QWORD
+extern str_eq_operator_func:QWORD
+extern translate_next_subtitle:BYTE
+extern store_subtitle_str_info_ptr:QWORD
+
+loadingscreen_subs_data_hook proc
+    ; Original instructions
+    lea rdx, [rdi+8]
+    lea rcx, [rsp+32]
+
+    ; Check if translations are disabled
+    push rax
+    mov al, BYTE PTR [translations_enabled]
+    cmp al, 0
+    pop rax
+    je lbl_call_str_eq_operator
+
+    ; Save registers
+    push rax
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+    push rbp
+
+    ; Load translated string
+    call store_subtitle_str_info_ptr
+
+    ; Restore registers
+    pop rbp
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+
+    ; Check if next subtitle should be translated
+    push rax
+    mov al, BYTE PTR [translate_next_subtitle]
+    cmp al, 0
+    pop rax
+    je lbl_call_str_eq_operator
+
+    ; Overwrite pointer to subtitles data
+    ;; rdx holds address of ZString
+    mov rdx, QWORD PTR [subtitles_zstr_buf_ptr]
+
+    lbl_call_str_eq_operator:
+    ; Original instruction
+    call str_eq_operator_func
+
+    ; Jump back to original function
+    jmp loadingscreen_subs_data_hook_ret
+loadingscreen_subs_data_hook endp
+
+
+extern playing_video_no_load_screen:BYTE
+
+submgr_data_hook proc
+    ; Original instructions
+    mov rax, QWORD PTR [rbp-105]  ; 0x69
+    lea rcx, [rsi+16]
+    mov QWORD PTR [rsi+8], rax
+
+    ; Check if translations are disabled
+    push rax
+    mov al, BYTE PTR [translations_enabled]
+    cmp al, 0
+    pop rax
+    je lbl_call_str_eq_operator
+
+    ; Check if video is playing
+    push rax
+    mov al, BYTE PTR [playing_video_no_load_screen]
+    cmp al, 0
+    pop rax
+    mov BYTE PTR [playing_video_no_load_screen], 0
+    je lbl_call_str_eq_operator
+
+    ; Save registers
+    push rax
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+    push rbp
+
+    ; Load translated string
+    call store_subtitle_str_info_ptr
+
+    ; Restore registers
+    pop rbp
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+
+    ; Check if next subtitle should be translated
+    push rax
+    mov al, BYTE PTR [translate_next_subtitle]
+    cmp al, 0
+    pop rax
+    je lbl_call_str_eq_operator
+
+    ; Overwrite pointer to subtitles data
+    ;; rdx holds address of ZString
+    mov rdx, QWORD PTR [subtitles_zstr_buf_ptr]
+
+    lbl_call_str_eq_operator:
+    ; Original instruction
+    call str_eq_operator_func
+
+    ; Jump back to original function
+    jmp submgr_startsubs_data_hook_ret
+submgr_data_hook endp
 
 
 extern uielement_video_id_hook_ret:QWORD
@@ -227,6 +386,9 @@ uielement_video_id_hook proc
     mov QWORD PTR [video_res_id], rax
     pop rax
 
+    ; Update flag that indicates whether a non-loading-screen video is playing
+    mov BYTE PTR [playing_video_no_load_screen], 1
+
     ; Original function start
     mov QWORD PTR [rsp+16], rbx
     mov QWORD PTR [rsp+24], rsi
@@ -236,5 +398,34 @@ uielement_video_id_hook proc
     ; Jump back to original function
     jmp uielement_video_id_hook_ret
 uielement_video_id_hook endp
+
+
+extern vidscreen_init_hook_ret:QWORD
+extern menuscreen_init_func:QWORD
+
+vidscreen_init_hook proc
+    ; Store video ID
+    push rax
+    mov rax, rcx
+    add rax, 328  ; 0x148
+    mov rax, QWORD PTR [rax]
+    add rax, 296  ; 0x128
+    mov rax, QWORD PTR [rax]
+    mov QWORD PTR [video_res_id], rax
+    pop rax
+
+    ; Original function start
+    mov QWORD PTR [rsp+8], rbx
+    push rdi
+    sub rsp, 80  ; 0x50
+    mov rdi, rcx
+    call menuscreen_init_func
+
+    ; Update flag that indicates whether a non-loading-screen video is playing
+    mov BYTE PTR [playing_video_no_load_screen], 1
+
+    ; Jump back to original function
+    jmp vidscreen_init_hook_ret
+vidscreen_init_hook endp
 
 end

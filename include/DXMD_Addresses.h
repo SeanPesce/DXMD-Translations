@@ -25,8 +25,17 @@ extern "C" void* textlist_str_alloc_hook_ret = NULL;
 
 extern "C" void* loadingscreen_startsubs_func = (void*)0x1442DB5D0;  // AoB (after deobfuscation): 48 89 5c 24 08 48 89 74 24 10 57 48 83 ec ?? 48 ?? ?? 48 ?? ?? ?? ?? e8
 extern "C" void* loadingscreen_video_id_hook_ret = NULL;
+extern "C" void* loadingscreen_startsubs_get_subs_data_instr = (void*)0x1442DB67B;  // AoB (after deobfuscation):
+extern "C" void* loadingscreen_subs_data_hook_ret = NULL;
+extern "C" void* str_eq_operator_func = (void*)0x143148340;  // AoB (after deobfuscation):
 extern "C" void* uielement_playvid_func = (void*)0x144859070;  // AoB (after deobfuscation): 48 89 5c 24 10 48 89 74 24 18 57 48 83 ec 70 48 ?? ?? ?? ?? ?? ?? bb 
 extern "C" void* uielement_video_id_hook_ret = NULL;
+extern "C" void* submgr_startsubs_get_subs_data_instr = (void*)0x1436A5B73;  // AoB (after deobfuscation): 48 8b 45 97 48 8d 4e 10 48 89 46 08 e8
+extern "C" void* submgr_startsubs_data_hook_ret = NULL;
+
+extern "C" void* vidscreen_init_func = (void*)0x14475C1F0;  // AoB (after deobfuscation):
+extern "C" void* vidscreen_init_hook_ret = NULL;
+extern "C" void* menuscreen_init_func = (void*)0x143B3B540;
 
 
 #endif // SP_DXMD_MEMORY_ADDRESSES_H_
