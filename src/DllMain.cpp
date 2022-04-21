@@ -3,16 +3,17 @@
 #include <Windows.h>
 
 #include <inttypes.h>
+#include <filesystem>
 
 #include "sp/environment.h"
 #include "sp/file.h"
 #include "sp/io/powershell_ostream.h"
 
-const char *cfg_file = ".\\retail\\DXMD_Mod.ini";
+const char *cfg_file = ".\\DXMD_Mod.ini";
 sp::io::ps_ostream debug;
 
 // Configurable settings
-std::string log_file = ".\\retail\\DXMD_Mod.log";
+std::string log_file = ".\\DXMD_Mod.log";
 extern "C" uint8_t translations_enabled;
 
 void load_original_dll();
@@ -43,6 +44,9 @@ BOOL WINAPI DllMain(HINSTANCE hinst_dll, DWORD fdw_reason, LPVOID lpv_reserved)
 {
     dll_instance = hinst_dll;
     if (fdw_reason == DLL_PROCESS_ATTACH) {
+        // Set working directory
+        SetCurrentDirectory(sp::env::lib_dir().c_str());
+
         debug = sp::io::ps_ostream("DXMD Mod Debug");
         if (GetPrivateProfileInt("DLL", "Debug", 0, cfg_file))
         {
@@ -212,7 +216,8 @@ void init_settings()
         vidscreen_init_func = (void*)(dxmd_base + 0x475C1F0);
         menuscreen_init_func = (void*)(dxmd_base + 0x3B3B540);
     }
-    else if (exe_md5 == "3745fa30bf3f607a58775f818c5e0ac0")  // v1.19-801.0 GoG
+    else if (exe_md5 == "3745fa30bf3f607a58775f818c5e0ac0"     // v1.19-801.0 GoG
+            || exe_md5 == "c1a85abd61e3d31db179801a27f56e12")  // v1.19-801.0 (unknown platform)
     {
         prehook_inject_addr = NULL;
         prehook_ret = NULL;
@@ -230,23 +235,24 @@ void init_settings()
         vidscreen_init_func = (void*)(dxmd_base + 0x1324850);
         menuscreen_init_func = (void*)(dxmd_base + 0x7AD3A0);
     }
-    /*else if (exe_md5 == "c1a85abd61e3d31db179801a27f56e12")  // v1.19-801.0 (unknown platform)
+    else if (exe_md5 == "a47cbe45e694dd57ec0d141fd7854589")  // Breach v1.15-758.0 Steam
     {
-        // @TODO: VirtualProtect fails on this version of the executable. Why?
-        prehook_inject_addr = (void*)(0x14805e513);
-        prehook_ret = (void*)((uint64_t)prehook_inject_addr + 15);  // DXMD.exe+0x805E522
-        LPVOID temp = prehook_inject_addr;
-        ULONG sz = 16;
-        ULONG old_protect = 0;
-        PULONG old_protect_ptr = &old_protect;
-        typedef NTSTATUS(*NtProtectVirtualMemory_t)(HANDLE, PVOID, PULONG, ULONG, PULONG);
-        NtProtectVirtualMemory_t NtProtectVirtualMemory  = (NtProtectVirtualMemory_t)GetProcAddress(GetModuleHandle("ntdll.dll"), "NtProtectVirtualMemory");
-        NTSTATUS status = NtProtectVirtualMemory(GetCurrentProcess(), &temp, &sz, PAGE_EXECUTE_READWRITE, old_protect_ptr);
-        textlist_installer_func = (void*)(0x1436A39C0);
-        get_mem_mgr_func = (void*)(0x143159300);
-        textlist_str_alloc_call_instruction = (void*)(0x1436A101A);
-        textlist_str_alloc_func = (void*)(0x14314C0C0);
-    }*/
+        prehook_inject_addr = NULL;
+        prehook_ret = NULL;
+        get_mem_mgr_func = (void*)(dxmd_base + 0x36890);
+
+        textlist_installer_func = (void*)(dxmd_base + 0x365840);
+        textlist_str_alloc_call_instruction = (void*)(dxmd_base + 0x36316B);
+        textlist_str_alloc_func = (void*)(dxmd_base + 0x2A650);
+
+        loadingscreen_startsubs_func = (void*)(dxmd_base + 0xED7770);
+        loadingscreen_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0xED782D);
+        str_eq_operator_func = (void*)(dxmd_base + 0x26C60);
+        uielement_playvid_func = (void*)(dxmd_base + 0x1419AE0);
+        submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x367C07);
+        vidscreen_init_func = (void*)(dxmd_base + 0x1323390);
+        menuscreen_init_func = (void*)(dxmd_base + 0x7ACEF0);  // Called a few instructions after vidscreen_init_func
+    }
     else
     {
         debug.print("[ERROR] Unrecognized game version. Exiting...\n");
