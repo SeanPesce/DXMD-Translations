@@ -30,6 +30,7 @@ extern "C" void* textlist_str_buf_ptr;
 extern "C" uint64_t textlist_str_len;
 
 
+nlohmann::json json;
 std::map<uint64_t, std::map<uint32_t, std::string>> textlist_translation_data;
 // Map video/cinematic IDs to timed subtitle data
 std::map<uint64_t, std::string> subtitle_translation_data;
@@ -87,7 +88,6 @@ void load_translation_json(const char* fpath)
     // Load JSON data
     debug.print("Loading strings from " + std::string(fpath) + "...\n");
     std::ifstream istream(fpath);
-    nlohmann::json json;
     bool parse_failed = false;
     try
     {

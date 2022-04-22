@@ -5,6 +5,8 @@
 #include <inttypes.h>
 #include <filesystem>
 
+#include "lib/nlohmann_json.hpp"
+
 #include "sp/environment.h"
 #include "sp/file.h"
 #include "sp/io/powershell_ostream.h"
@@ -13,6 +15,7 @@ const char *cfg_file = ".\\DXMD_Mod.ini";
 sp::io::ps_ostream debug;
 
 // Configurable settings
+extern nlohmann::json json;
 std::string log_file = ".\\DXMD_Mod.log";
 extern "C" uint8_t translations_enabled;
 
@@ -276,6 +279,15 @@ void init_settings()
     char cfg_str[MAX_PATH];
     GetPrivateProfileString("Language", "StringsJSON", "", cfg_str, MAX_PATH, cfg_file);
     load_translation_json(cfg_str);
+
+    // @TODO: Delete this when the first-play cutscene translation bug is fixed
+    if (GetPrivateProfileInt("Language", "CutsceneBugFixWarning", 1, cfg_file))
+    {
+        std::string warning = json["dev_messages"]["cutscene_first_play_warning"].get<std::string>();
+        WCHAR wide_char_buf[512];
+        MultiByteToWideChar(CP_UTF8, 0, warning.c_str(), (int)warning.size(), wide_char_buf, 512);
+        MessageBoxW(NULL, wide_char_buf, L"WARNING", MB_OK);
+    }
 }
 
 
