@@ -259,7 +259,7 @@ void init_settings()
     else
     {
         debug.print("[ERROR] Unrecognized game version. Exiting...\n");
-        MessageBox(NULL, ("Unrecognized game version:\n"+ exe_md5).c_str(), "ERROR", MB_OK);
+        MessageBox(NULL, ("Unrecognized game version:\n"+ exe_md5).c_str(), "ERROR", MB_OK|MB_SETFOREGROUND|MB_TOPMOST|MB_APPLMODAL);
         ExitProcess(SP_ERR_BAD_FILE_TYPE);
     }
 
@@ -286,7 +286,7 @@ void init_settings()
         std::string warning = json["dev_messages"]["cutscene_first_play_warning"].get<std::string>();
         WCHAR wide_char_buf[512];
         MultiByteToWideChar(CP_UTF8, 0, warning.c_str(), (int)warning.size(), wide_char_buf, 512);
-        MessageBoxW(NULL, wide_char_buf, L"WARNING", MB_OK);
+        MessageBoxW(NULL, wide_char_buf, L"WARNING", MB_OK|MB_SETFOREGROUND|MB_TOPMOST|MB_APPLMODAL);
     }
 }
 
