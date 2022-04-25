@@ -187,6 +187,7 @@ extern "C" void* loadingscreen_startsubs_func;
 extern "C" void* loadingscreen_startsubs_get_subs_data_instr;
 extern "C" void* str_eq_operator_func;
 extern "C" void* uielement_playvid_func;
+extern "C" void* uicredits_playvid_func;
 extern "C" void* submgr_startsubs_get_subs_data_instr;
 extern "C" void* vidscreen_init_func;
 extern "C" void* menuscreen_init_func;
@@ -215,6 +216,7 @@ void init_settings()
         loadingscreen_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x42DB68A);
         str_eq_operator_func = (void*)(dxmd_base + 0x3148340);
         uielement_playvid_func = (void*)(dxmd_base + 0x4859070);
+        uicredits_playvid_func = (void*)(dxmd_base + 0x4858FA0);
         submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x36A5B67);
         vidscreen_init_func = (void*)(dxmd_base + 0x475C1F0);
         menuscreen_init_func = (void*)(dxmd_base + 0x3B3B540);
@@ -234,6 +236,7 @@ void init_settings()
         loadingscreen_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0xED713D);
         str_eq_operator_func = (void*)(dxmd_base + 0x26D60);
         uielement_playvid_func = (void*)(dxmd_base + 0x141B1E0);
+        uicredits_playvid_func = (void*)(dxmd_base + 0x141B110);
         submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x3676E7);
         vidscreen_init_func = (void*)(dxmd_base + 0x1324850);
         menuscreen_init_func = (void*)(dxmd_base + 0x7AD3A0);
@@ -252,6 +255,7 @@ void init_settings()
         loadingscreen_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0xED782D);
         str_eq_operator_func = (void*)(dxmd_base + 0x26C60);
         uielement_playvid_func = (void*)(dxmd_base + 0x1419AE0);
+        uicredits_playvid_func = (void*)(dxmd_base + 0x1419A10);
         submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x367C07);
         vidscreen_init_func = (void*)(dxmd_base + 0x1323390);
         menuscreen_init_func = (void*)(dxmd_base + 0x7ACEF0);  // Called a few instructions after vidscreen_init_func

@@ -428,4 +428,30 @@ vidscreen_init_hook proc
     jmp vidscreen_init_hook_ret
 vidscreen_init_hook endp
 
+
+extern uicredits_video_id_hook_ret:QWORD
+
+uicredits_video_id_hook proc
+    ; Store video ID
+    push rax
+    mov rax, rcx
+    add rax, 104  ; 0x68
+    mov rax, QWORD PTR [rax]
+    mov QWORD PTR [video_res_id], rax
+    pop rax
+
+    ; Update flag that indicates whether a non-loading-screen video is playing
+    mov BYTE PTR [playing_video_no_load_screen], 1
+
+    ; Original function start
+    mov QWORD PTR [rsp+8], rbx
+    push rdi
+    sub rsp, 32  ; 0x20
+    mov rdi, rcx
+    mov rcx, QWORD PTR [rcx+40]  ; 0x28
+
+    ; Jump back to original function
+    jmp uicredits_video_id_hook_ret
+uicredits_video_id_hook endp
+
 end

@@ -42,6 +42,7 @@ extern "C" void textlist_str_alloc_hook();
 extern "C" void loadingscreen_video_id_hook();
 extern "C" void loadingscreen_subs_data_hook();
 extern "C" void uielement_video_id_hook();
+extern "C" void uicredits_video_id_hook();
 extern "C" void submgr_data_hook();
 extern "C" void vidscreen_init_hook();
 
@@ -245,6 +246,7 @@ extern "C" void install_translation_hooks()
     // Video subtitle hooks
     sp::mem::code::x64::inject_jmp_14b(loadingscreen_startsubs_func, &loadingscreen_video_id_hook_ret, 1, loadingscreen_video_id_hook);
     sp::mem::code::x64::inject_jmp_14b(uielement_playvid_func, &uielement_video_id_hook_ret, 1, uielement_video_id_hook);
+    sp::mem::code::x64::inject_jmp_14b(uicredits_playvid_func, &uicredits_video_id_hook_ret, 3, uicredits_video_id_hook);
     sp::mem::code::x64::inject_jmp_14b(loadingscreen_startsubs_get_subs_data_instr, &loadingscreen_subs_data_hook_ret, 0, loadingscreen_subs_data_hook);
     sp::mem::code::x64::inject_jmp_14b(submgr_startsubs_get_subs_data_instr, &submgr_startsubs_data_hook_ret, 3, submgr_data_hook);
     sp::mem::code::x64::inject_jmp_14b(vidscreen_init_func, &vidscreen_init_hook_ret, 4, vidscreen_init_hook);

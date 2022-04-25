@@ -34,6 +34,9 @@ extern "C" void* loadingscreen_subs_data_hook_ret = NULL;
 extern "C" void* str_eq_operator_func = (void*)0x143148340;  // Called a few instructions after loadingscreen_startsubs_get_subs_data_instr
 extern "C" void* uielement_playvid_func = (void*)0x144859070;  // AoB (after deobfuscation): 48 89 5c 24 10 48 89 74 24 18 57 48 83 ec 70 48 ?? ?? ?? ?? ?? ?? bb
 extern "C" void* uielement_video_id_hook_ret = NULL;
+extern "C" void* uicredits_playvid_func = (void*)0x144858FA0;  //  AoB (Steam; after deobfuscation): (Function before uielement_playvid_func)
+                                                               // GoG/Breach (2 results; first one): 48 89 5C 24 08 57 48 83 EC 20 48 8B F9 48 8B 49 28 BB 04 00 00 00 48 8B C1 8B D3 0F 1F 44 00 00 0F18 08 48 8D 40 40 48 FF CA
+extern "C" void* uicredits_video_id_hook_ret = NULL;
 extern "C" void* submgr_startsubs_get_subs_data_instr = (void*)0x1436A5B73;  // AoB (after deobfuscation): 48 8b 45 97 48 8d 4e 10 48 89 46 08 e8
 extern "C" void* submgr_startsubs_data_hook_ret = NULL;
 
