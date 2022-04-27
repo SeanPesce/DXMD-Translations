@@ -45,5 +45,12 @@ extern "C" void* vidscreen_init_func = (void*)0x14475C1F0;  // AoB (Steam, after
 extern "C" void* vidscreen_init_hook_ret = NULL;
 extern "C" void* menuscreen_init_func = (void*)0x143B3B540;  // Called a few instructions after vidscreen_init_func
 
+extern "C" void* renderplayer_start_hook_addr = (void*)0x143615ECC;  // AoB (after deobfuscation): 48 ?? ?? 0F 29 45 E0 FF 50 28 48 89 75 D0
+extern "C" void* renderplayer_video_id_hook_ret = NULL;
+
+
+extern "C" void* resid_record_mapping_func = (void*)0x143A37490;  // AoB: 48 89 5C 24 10 48 89 6C 24 18 56 57 41 56 48 83 ec 70 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? e8
+extern "C" void* resid_record_mapping_hook_ret = NULL;
+
 
 #endif // SP_DXMD_MEMORY_ADDRESSES_H_

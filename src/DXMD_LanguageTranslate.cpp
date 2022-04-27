@@ -45,6 +45,9 @@ extern "C" void uielement_video_id_hook();
 extern "C" void uicredits_video_id_hook();
 extern "C" void submgr_data_hook();
 extern "C" void vidscreen_init_hook();
+extern "C" void renderplayer_video_id_hook();
+
+extern "C" void resid_record_mapping_hook();
 
 
 // This function was developed based on code from Franc[e]sco (from ccplz.net)
@@ -250,6 +253,12 @@ extern "C" void install_translation_hooks()
     sp::mem::code::x64::inject_jmp_14b(loadingscreen_startsubs_get_subs_data_instr, &loadingscreen_subs_data_hook_ret, 0, loadingscreen_subs_data_hook);
     sp::mem::code::x64::inject_jmp_14b(submgr_startsubs_get_subs_data_instr, &submgr_startsubs_data_hook_ret, 3, submgr_data_hook);
     sp::mem::code::x64::inject_jmp_14b(vidscreen_init_func, &vidscreen_init_hook_ret, 4, vidscreen_init_hook);
+    sp::mem::code::x64::inject_jmp_14b(renderplayer_start_hook_addr, &renderplayer_video_id_hook_ret, 0, renderplayer_video_id_hook);
+
+    if (resid_record_mapping_func && debug_resid_map)
+    {
+        sp::mem::code::x64::inject_jmp_14b(resid_record_mapping_func, &resid_record_mapping_hook_ret, 0, resid_record_mapping_hook);
+    }
 }
 extern "C" void* install_translation_hooks_ptr = &install_translation_hooks;
 
@@ -347,3 +356,10 @@ std::string calculate_file_md5(std::string& fpath, size_t read_sz)
     CoTaskMemFree(buf);
     return md5.getHash();
 }
+
+
+extern "C" void print_res_mapping_info()
+{
+    debug.print(std::to_string(cur_mapping_runtime_id) + "->" + std::string(cur_mapping_res_id) + "\n");
+}
+extern "C" void* print_res_mapping_info_ptr = &print_res_mapping_info;

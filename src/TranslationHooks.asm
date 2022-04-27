@@ -454,4 +454,102 @@ uicredits_video_id_hook proc
     jmp uicredits_video_id_hook_ret
 uicredits_video_id_hook endp
 
+
+extern renderplayer_video_id_hook_ret:QWORD
+
+renderplayer_video_id_hook proc
+    ; If already playing a video, do nothing (otherwise menu cutscene ID will be overwritten)
+    push rax
+    mov al, BYTE PTR [playing_video_no_load_screen]
+    cmp al, 1
+    pop rax
+    je lbl_renderplayer_video_id_hook_orig_instrs
+    
+    ; Store video ID
+    push rax
+    mov rax, rdx
+    add rax, 144  ; 0x90
+    mov rax, QWORD PTR [rax]
+    mov QWORD PTR [video_res_id], rax
+    pop rax
+
+    ; Update flag that indicates whether a non-loading-screen video is playing
+    mov BYTE PTR [playing_video_no_load_screen], 1
+
+    ; Original function start
+    lbl_renderplayer_video_id_hook_orig_instrs:
+    mov rcx, rdi
+    movaps XMMWORD PTR [rbp-32], xmm0
+    call QWORD PTR [rax+40]  ; 0x28
+    mov QWORD PTR [rax-48], rsi  ; 0x30
+
+    ; Jump back to original function
+    jmp renderplayer_video_id_hook_ret
+renderplayer_video_id_hook endp
+
+
+extern resid_record_mapping_hook_ret:QWORD
+extern cur_mapping_runtime_id:QWORD
+extern cur_mapping_res_id:QWORD
+extern print_res_mapping_info_ptr:QWORD
+
+resid_record_mapping_hook proc
+    ; Store runtime ID
+    push rax
+    mov rax, QWORD PTR [rdx]
+    mov QWORD PTR [cur_mapping_runtime_id], rax
+
+    ; Store res ID
+    mov rax, QWORD PTR [r8]
+    mov QWORD PTR [cur_mapping_res_id], rax
+    pop rax
+
+    ; Save registers
+    push rax
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+    push rbp
+
+    ; Print mapping
+    call print_res_mapping_info_ptr
+
+    ; Restore registers
+    pop rbp
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+
+    ; Original function start
+    mov QWORD PTR [rsp+16], rbx
+    mov QWORD PTR [rsp+24], rbp  ; 0x18
+    push rsi
+    push rdi
+    push r14
+
+    ; Jump back to original function
+    jmp resid_record_mapping_hook_ret
+resid_record_mapping_hook endp
+
 end

@@ -21,9 +21,9 @@
 
 
 void init_settings();
-void init_modifiers();
 
 extern "C" uint8_t translations_enabled = 1;
+extern "C" uint8_t debug_resid_map = 0;
 
 extern "C" uint64_t textlist_res_id = NULL;
 extern "C" uint32_t textlist_str_id = NULL;
@@ -40,6 +40,10 @@ uint8_t subtitles_str_buf[_SUBTITLES_STR_BUF_LEN];
 char* subtitles_str_buf_ptr = (char*)&subtitles_str_buf[sizeof(void*)+8];
 uint32_t subtitles_capacity = _SUBTITLES_STR_BUF_LEN - 16;
 extern "C" void* subtitles_zstr_buf_ptr = &subtitles_str_buf;
+
+
+extern "C" uint64_t cur_mapping_runtime_id = NULL;
+extern "C" char* cur_mapping_res_id = NULL;
 
 
 std::string calculate_file_md5(std::string& fpath, size_t read_sz = 1048576 /* 1MB */);

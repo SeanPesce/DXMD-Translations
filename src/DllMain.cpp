@@ -18,6 +18,7 @@ sp::io::ps_ostream debug;
 extern nlohmann::json json;
 std::string log_file = ".\\DXMD_Mod.log";
 extern "C" uint8_t translations_enabled;
+extern "C" uint8_t debug_resid_map;
 
 void load_original_dll();
 int get_dll_chain();
@@ -191,6 +192,9 @@ extern "C" void* uicredits_playvid_func;
 extern "C" void* submgr_startsubs_get_subs_data_instr;
 extern "C" void* vidscreen_init_func;
 extern "C" void* menuscreen_init_func;
+extern "C" void* renderplayer_start_hook_addr;
+
+extern "C" void* resid_record_mapping_func;
 
 /**
  *  Determine keybinds and global configuration settings for the plugin
@@ -220,6 +224,9 @@ void init_settings()
         submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x36A5B67);
         vidscreen_init_func = (void*)(dxmd_base + 0x475C1F0);
         menuscreen_init_func = (void*)(dxmd_base + 0x3B3B540);
+        renderplayer_start_hook_addr = (void*)(dxmd_base + 0x3615ECC);
+
+        resid_record_mapping_func = (void*)(dxmd_base + 0x3A37490);
     }
     else if (exe_md5 == "3745fa30bf3f607a58775f818c5e0ac0"     // v1.19-801.0 GoG
             || exe_md5 == "c1a85abd61e3d31db179801a27f56e12")  // v1.19-801.0 (unknown platform)
@@ -240,6 +247,9 @@ void init_settings()
         submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x3676E7);
         vidscreen_init_func = (void*)(dxmd_base + 0x1324850);
         menuscreen_init_func = (void*)(dxmd_base + 0x7AD3A0);
+        renderplayer_start_hook_addr = (void*)(dxmd_base + 0x2E2473);
+
+        resid_record_mapping_func = (void*)(dxmd_base + 0x6C10D0);
     }
     else if (exe_md5 == "a47cbe45e694dd57ec0d141fd7854589")  // Breach v1.15-758.0 Steam
     {
@@ -259,6 +269,9 @@ void init_settings()
         submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x367C07);
         vidscreen_init_func = (void*)(dxmd_base + 0x1323390);
         menuscreen_init_func = (void*)(dxmd_base + 0x7ACEF0);  // Called a few instructions after vidscreen_init_func
+        renderplayer_start_hook_addr = (void*)(dxmd_base + 0x2E2853);
+
+        resid_record_mapping_func = (void*)(dxmd_base + 0x6C14D0);
     }
     else
     {
@@ -279,6 +292,8 @@ void init_settings()
     {
         debug.print("disabled.\n");
     }
+
+    debug_resid_map = GetPrivateProfileInt("Game", "DebugResourceIDMapping", 0, cfg_file);
 
     char cfg_str[MAX_PATH];
     GetPrivateProfileString("Language", "StringsJSON", "", cfg_str, MAX_PATH, cfg_file);
