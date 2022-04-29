@@ -14,6 +14,7 @@ This mod enables string replacement in [Deus Ex: Mankind Divided](http://store.s
 ## Installation  
 Copy **version.dll**, **DXMD_Mod.ini**, and **strings.json** into the `\retail\` directory (usually `C:\Program Files (x86)\Steam\SteamApps\common\Deus Ex Mankind Divided\retail`).  
 
+**Note:** The [latest MSVC Redistributable](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist) must be installed to run this mod. If you get an error about a missing `vcruntime140_1.dll`, you probably don't have it installed.  
 
 ## Default key-binds  
 None yet.
