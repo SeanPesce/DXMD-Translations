@@ -21,6 +21,7 @@
 #pragma  comment(lib, "psapi")
 
 
+extern const char* cfg_file;
 extern sp::io::ps_ostream debug;
 
 extern "C" uint64_t textlist_res_id;
@@ -30,7 +31,6 @@ extern "C" void* textlist_str_buf_ptr;
 extern "C" uint64_t textlist_str_len;
 
 
-nlohmann::json json;
 std::map<uint64_t, std::map<uint32_t, std::string>> textlist_translation_data;
 // Map video/cinematic IDs to timed subtitle data
 std::map<uint64_t, std::string> subtitle_translation_data;
@@ -92,6 +92,7 @@ void load_translation_json(const char* fpath)
     // Load JSON data
     debug.print("Loading strings from " + std::string(fpath) + "...\n");
     std::ifstream istream(fpath);
+    nlohmann::json json;
     bool parse_failed = false;
     try
     {
@@ -118,66 +119,148 @@ void load_translation_json(const char* fpath)
     textlist_translation_data = std::map<uint64_t, std::map<uint32_t, std::string>>();
     subtitle_translation_data = std::map<uint64_t, std::string>();
 
+    size_t file_count = 0;
+
     // Parse textlist data
-    size_t file_count = json["textlists"].size();
-    for (size_t i = 0; i < file_count; i++)
+    if (json.contains("textlists"))
     {
-        auto f = json["textlists"][i];
-        size_t str_count = f["content"].size();
-        std::map<uint32_t, std::string> textlist_data;
-
-        for (size_t j = 0; j < str_count; j++)
+        size_t file_count = json["textlists"].size();
+        for (size_t i = 0; i < file_count; i++)
         {
-            auto s = f["content"][j];
-            textlist_data.insert({ s["id"].get<uint32_t>(), s["string"].get<std::string>() });
-        }
+            auto f = json["textlists"][i];
+            if (f.contains("id") && f.contains("content"))
+            {
+                size_t str_count = f["content"].size();
+                std::map<uint32_t, std::string> textlist_data;
 
-        textlist_translation_data.insert({ f["id"].get<uint64_t>(), textlist_data });
+                for (size_t j = 0; j < str_count; j++)
+                {
+                    auto s = f["content"][j];
+                    if (s.contains("id") && s.contains("string"))
+                    {
+                        textlist_data.insert({ s["id"].get<uint32_t>(), s["string"].get<std::string>() });
+                    }
+                    else
+                    {
+                        debug.print("[WARNING] Missing textlists[" + std::to_string(i) + "].content[" + std::to_string(j) + "] ID or string data\n");
+                    }
+                }
+
+                textlist_translation_data.insert({ f["id"].get<uint64_t>(), textlist_data });
+            }
+            else
+            {
+                debug.print("[WARNING] Missing textlists[" + std::to_string(i) + "] content or ID\n");
+            }
+        }
+        debug.print("Finished loading translation data.\n");
     }
-    debug.print("Finished loading translation data.\n");
+    else
+    {
+        debug.print("[WARNING] Failed to find TextList JSON data. Most data will not be translated.\n");
+    }
 
     // Parse video subtitle data
     size_t missing_vid_ids = 0;
-    file_count = json["subtitles"].size();
-    for (size_t i = 0; i < file_count; i++)
+    if (json.contains("subtitles"))
     {
-        auto reslib = json["subtitles"][i];
-        size_t vid_count = reslib["content"].size();
-        for (size_t j = 0; j < vid_count; j++)
+        file_count = json["subtitles"].size();
+        for (size_t i = 0; i < file_count; i++)
         {
-            auto vid = reslib["content"][j];
-            uint64_t id = vid["video_id"].get<uint64_t>();
-            if (id == 0 || id == 0xffffffffffffffff)
+            auto reslib = json["subtitles"][i];
+            if (reslib.contains("content"))
             {
-                missing_vid_ids++;
-                debug.print("Missing ID for video " + reslib["id"].get<std::string>() + "[" + std::to_string(j) + "]\n");
-                continue;
-            }
-
-            size_t line_count = vid["subs"].size();
-            std::string subs_data;
-            for (size_t k = 0; k < line_count; k++)
-            {
-                auto sub = vid["subs"][k];
-                // Build timestamp header
-                std::string start = sub["start"].get<std::string>();
-                std::string stop = sub["end"].get<std::string>();
-                subs_data += "//(" + start;
-                if (!stop.empty())
+                size_t vid_count = reslib["content"].size();
+                for (size_t j = 0; j < vid_count; j++)
                 {
-                    subs_data += ",";
+                    auto vid = reslib["content"][j];
+                    uint64_t id = 0;
+                    if (vid.contains("video_id"))
+                    {
+                        id = vid["video_id"].get<uint64_t>();
+                        if (id == 0 || id == 0xffffffffffffffff)
+                        {
+                            missing_vid_ids++;
+                            debug.print("No ID for video " + reslib["id"].get<std::string>() + "[" + std::to_string(j) + "]\n");
+                            continue;
+                        }
+
+                        if (vid.contains("subs"))
+                        {
+                            size_t line_count = vid["subs"].size();
+                            std::string subs_data;
+                            for (size_t k = 0; k < line_count; k++)
+                            {
+                                auto sub = vid["subs"][k];
+                                if (sub.contains("start") && sub.contains("end") && sub.contains("string"))
+                                {
+                                    // Build timestamp header
+                                    std::string start = sub["start"].get<std::string>();
+                                    std::string stop = sub["end"].get<std::string>();
+                                    subs_data += "//(" + start;
+                                    if (!stop.empty())
+                                    {
+                                        subs_data += ",";
+                                    }
+                                    subs_data += stop + ")\\\\";
+                                    // Add subtitle
+                                    subs_data += sub["string"].get<std::string>();
+                                }
+                                else
+                                {
+                                    debug.print("[WARNING] Missing subtitles[" + std::to_string(i) + "].content[" + std::to_string(j) + "].subs start, end, or string data\n");
+                                }
+                            }
+                            subtitle_translation_data.insert({ id, subs_data });
+                            //debug.print("\n\n"+subs_data + "\n\n");
+                        }
+                        else
+                        {
+                            debug.print("[WARNING] Missing subtitles[" + std::to_string(i) + "].content[" + std::to_string(j) + "].subs\n");
+                        }
+                    }
+                    else
+                    {
+                        debug.print("[WARNING] Missing subtitles[" + std::to_string(i) + "].content[" + std::to_string(j) + "].video_id\n");
+                        continue;
+                    }
                 }
-                subs_data += stop + ")\\\\";
-                // Add subtitle
-                subs_data += sub["string"].get<std::string>();
             }
-            subtitle_translation_data.insert({ id, subs_data });
-            //debug.print("\n\n"+subs_data + "\n\n");
+            else
+            {
+                debug.print("[WARNING] Missing subtitles[" + std::to_string(i) + "].content\n");
+            }
         }
+    }
+    else
+    {
+        debug.print("[WARNING] Failed to find subtitles JSON data. Cutscenes not be translated.\n");
     }
     if (missing_vid_ids > 0)
     {
         debug.print("[WARNING] Missing IDs for " + std::to_string(missing_vid_ids) + " videos. Subtitles for these cinematics will not be translated.\n");
+    }
+
+    // @TODO: Delete this if/when the first-play cutscene translation bug is fixed
+    if (GetPrivateProfileInt("Language", "CutsceneBugFixWarning", 1, cfg_file))
+    {
+        debug.print("CutsceneBugFixWarning=1\n");
+
+        if (json.contains("dev_messages") && json["dev_messages"].contains("cutscene_first_play_warning"))
+        {
+            std::string warning = json["dev_messages"]["cutscene_first_play_warning"].get<std::string>();
+            WCHAR wide_char_buf[2048];
+            MultiByteToWideChar(CP_UTF8, 0, warning.c_str(), (int)warning.size(), wide_char_buf, 2048);
+            MessageBoxW(NULL, wide_char_buf, L"WARNING", MB_OK | MB_SETFOREGROUND | MB_TOPMOST | MB_APPLMODAL);
+        }
+        else
+        {
+            debug.print("[WARNING] Failed to find CutsceneBugFixWarning message JSON field.\n");
+        }
+    }
+    else
+    {
+        debug.print("CutsceneBugFixWarning=0\n");
     }
 }
 

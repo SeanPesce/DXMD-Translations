@@ -47,40 +47,69 @@ extern BOOL get_module_size(HMODULE hModule, LPVOID* lplpBase, PDWORD64 lpdwSize
 BOOL WINAPI DllMain(HINSTANCE hinst_dll, DWORD fdw_reason, LPVOID lpv_reserved)
 {
     dll_instance = hinst_dll;
-    if (fdw_reason == DLL_PROCESS_ATTACH) {
+    if (fdw_reason == DLL_PROCESS_ATTACH)
+    {
         // Set working directory
         SetCurrentDirectory(sp::env::lib_dir().c_str());
 
-        debug = sp::io::ps_ostream("DXMD Mod Debug");
-        if (GetPrivateProfileInt("DLL", "Debug", 0, cfg_file))
+        // Check that config file exists
+        std::ifstream cfg_check(cfg_file);
+        if (!cfg_check.good())
         {
-            debug.start();
+            std::string err_msg = "Failed to find language translation mod configuration file:\n" + std::string(cfg_file) + "\n\nCurrent directory:\n";
+            err_msg += std::filesystem::current_path().string();
+            err_msg += "\n\nPlease report this issue to the developer:\nhttps://github.com/SeanPesce/DXMD-Translations/issues";
+            MessageBox(NULL, err_msg.c_str(), "ERROR", MB_OK | MB_SETFOREGROUND | MB_TOPMOST | MB_APPLMODAL);
+            ExitProcess(SP_ERR_FILE_NOT_FOUND);
         }
 
         char cfg_str[MAX_PATH];
         GetPrivateProfileString("DLL", "LogFile", log_file.c_str(), cfg_str, MAX_PATH, cfg_file);
         log_file = cfg_str;
+
+        debug = sp::io::ps_ostream("DXMD Mod Debug");
+        debug.set_log_file(log_file);
+        if (GetPrivateProfileInt("DLL", "Debug", 0, cfg_file))
+        {
+            debug.start();
+        }
+
         debug.print("Writing log to " + log_file + "\n");
 
-        debug.print("\n+----------------------------+\r\n|    DXMD Translation Mod    |\r\n|     Author: Sean Pesce     |\r\n+----------------------------+\r\nCompiled: " __DATE__ "  " __TIME__ "\r\n\r\nAttached to process.\n");
+        debug.print("\n+----------------------------+\r\n|    DXMD Translation Mod    |\r\n|     Author: Sean Pesce     |\r\n+----------------------------+\r\nCompiled: " __DATE__ "  " __TIME__ "\r\n\r\n");
+
+        // Get current date/time
+        struct tm time_local;
+        time_t time_now = std::time(NULL);
+        errno_t time_result = localtime_s(&time_local, &time_now);
+        std::ostringstream oss;
+        oss << std::put_time(&time_local, "%Y-%m-%d %H:%M:%S");
+        std::string time_str = oss.str();
+        debug.print("Attached to process at " + time_str + "\n");
+
         dxmd_base = NULL;
         dxmd_size = 0;
         debug.print("Obtaining module base & size...\n");
         get_module_size(GetModuleHandle(NULL), (LPVOID*)&dxmd_base, &dxmd_size); // Obtain DXMD.exe base address & size
+        debug.print("    Base: " + std::to_string(dxmd_base) + "\n");
+        debug.print("    Size: " + std::to_string(dxmd_size) + "\n");
         get_dll_chain();
 
         debug.print("Finished loading settings.\n");
-        if (!dll_chain_instance) {
+        if (!dll_chain_instance)
+        {
             // No chain loaded; get original DLL from system directory
             load_original_dll();
         }
-        if (!dll_chain_instance) {
+        if (!dll_chain_instance)
+        {
             debug.print("Failed to load original DLL. Exiting...\n");
             MessageBox(NULL, ("Failed to load original " + std::string(lib_name) + ".dll").c_str(), "ERROR", MB_OK);
             return FALSE;
         }
         debug.print("Loading exported funcs...\n");
-        for (int i = 0; i < DLL_EXPORT_COUNT_; i++) {
+        for (int i = 0; i < DLL_EXPORT_COUNT_; i++)
+        {
             export_locs[i] = (UINT_PTR)GetProcAddress(dll_chain_instance, import_names[i]);
             std::stringstream strstr;
             strstr << std::hex << export_locs[i];
@@ -94,7 +123,9 @@ BOOL WINAPI DllMain(HINSTANCE hinst_dll, DWORD fdw_reason, LPVOID lpv_reserved)
         // Initialize thread(s)
         debug.print("Initializing async thread...\n");
         async_thread_handle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)&async_thread, 0, 0, 0);
-    } else if (fdw_reason == DLL_PROCESS_DETACH) {
+    }
+    else if (fdw_reason == DLL_PROCESS_DETACH)
+    {
         debug.print("Detaching from process.\n");
         FreeLibrary(dll_chain_instance);
     }
@@ -201,7 +232,6 @@ extern "C" void* resid_record_mapping_func;
  */
 void init_settings()
 {
-
     // Set memory addresses based on game executable MD5 (crowd-sourced hashes)
     std::string exe_md5 = calculate_file_md5(sp::env::exe_path());
     debug.print(sp::env::exe_name() + " MD5: " + exe_md5 + "\n");
@@ -283,30 +313,14 @@ void init_settings()
     install_pre_hook();
 
     translations_enabled = GetPrivateProfileInt("Language", "EnableTranslation", 1, cfg_file);
-    debug.print("Language translation is ");
-    if (translations_enabled)
-    {
-        debug.print("enabled.\n");
-    }
-    else
-    {
-        debug.print("disabled.\n");
-    }
+    debug.print("EnableTranslation=" + std::to_string(translations_enabled) + "\n");
 
     debug_resid_map = GetPrivateProfileInt("Game", "DebugResourceIDMapping", 0, cfg_file);
+    debug.print("DebugResourceIDMapping=" + std::to_string(debug_resid_map) + "\n");
 
     char cfg_str[MAX_PATH];
     GetPrivateProfileString("Language", "StringsJSON", "", cfg_str, MAX_PATH, cfg_file);
     load_translation_json(cfg_str);
-
-    // @TODO: Delete this when the first-play cutscene translation bug is fixed
-    if (GetPrivateProfileInt("Language", "CutsceneBugFixWarning", 1, cfg_file))
-    {
-        std::string warning = json["dev_messages"]["cutscene_first_play_warning"].get<std::string>();
-        WCHAR wide_char_buf[512];
-        MultiByteToWideChar(CP_UTF8, 0, warning.c_str(), (int)warning.size(), wide_char_buf, 512);
-        MessageBoxW(NULL, wide_char_buf, L"WARNING", MB_OK|MB_SETFOREGROUND|MB_TOPMOST|MB_APPLMODAL);
-    }
 }
 
 

@@ -26,6 +26,7 @@
                                          "for($i = 0; $i -lt 1; $i+=0) " \
                                          "{ " \
                                          "$in_line = (Read-Host); " \
+                                         "echo $in_line >> " + _log_file + " ; " \
                                          "Get-Process -Id " + std::to_string(sp::env::process_id()) + " > $null 2> $null; " \
                                          "if (!$?) { Exit }; " \
                                          "}; \""
@@ -44,6 +45,9 @@ namespace io {
         // Console colors
         std::string _bg_color;
         std::string _fg_color;
+
+        // Optional log file mirror
+        std::string _log_file;
 
 
     protected:
@@ -65,6 +69,7 @@ namespace io {
             _title = title;
             _bg_color = ps_ostream::defaults::bg_color;
             _fg_color = ps_ostream::defaults::fg_color;
+            _log_file = ps_ostream::defaults::log_file;
             _refresh_command();
         }
 
@@ -113,6 +118,12 @@ namespace io {
         }
 
 
+        inline const std::string& log_file() const
+        {
+            return _log_file;
+        }
+
+
         inline void set_title(const std::string& new_title)
         {
             if (_title != new_title)
@@ -154,6 +165,30 @@ namespace io {
         }
 
 
+        inline bool set_log_file(const std::string& log_file)
+        {
+            _log_file = log_file;
+            _refresh_command();
+            if (_log_file != "$null")
+            {
+                // @TODO: Create a backup of the existing file before deleting it?
+                int del_result = std::remove(_log_file.c_str());
+                if (del_result)
+                {
+                    // @TODO: Handle file delete error?
+                }
+            }
+            restart();
+            return true;
+        }
+
+
+        inline void unset_log_file()
+        {
+            set_log_file("$null");
+        }
+
+
         inline bool set_colors(const std::string& new_bg_color, const std::string& new_fg_color)
         {
             bool result = false;
@@ -189,6 +224,7 @@ namespace io {
             static constexpr const char* title = "PowerShell Output";
             static constexpr const char* bg_color = "black";
             static constexpr const char* fg_color = "white";
+            static constexpr const char* log_file = "$null";
         private:
             defaults() = delete;
         };
