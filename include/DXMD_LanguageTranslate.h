@@ -18,6 +18,7 @@
 
 #define _TEXTLIST_STR_BUF_LEN 1048576  // 1MB
 #define _SUBTITLES_STR_BUF_LEN _TEXTLIST_STR_BUF_LEN
+#define _UI_FONT_BUF_LEN _TEXTLIST_STR_BUF_LEN
 
 
 void init_settings();
@@ -44,6 +45,12 @@ extern "C" void* subtitles_zstr_buf_ptr = &subtitles_str_buf;
 
 extern "C" uint64_t cur_mapping_runtime_id = NULL;
 extern "C" char* cur_mapping_res_id = NULL;
+
+
+extern "C" uint64_t ui_font_data_size = 0;
+uint8_t ui_font_buf[_UI_FONT_BUF_LEN];
+extern "C" void* ui_font_buf_ptr = &ui_font_buf;
+extern "C" void* ui_font_orig = NULL;
 
 
 std::string calculate_file_md5(std::string& fpath, size_t read_sz = 1048576 /* 1MB */);

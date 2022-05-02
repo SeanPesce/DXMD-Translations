@@ -552,4 +552,74 @@ resid_record_mapping_hook proc
     jmp resid_record_mapping_hook_ret
 resid_record_mapping_hook endp
 
+
+extern ui_font_addr_hook_ret:QWORD
+extern ui_font_orig:QWORD
+
+; Saves the address of the game UI font data
+ui_font_addr_hook proc
+    ; Store original font data address
+    push rax
+    mov rax, QWORD PTR [rcx+32]  ; 0x20
+    mov rax, QWORD PTR [rax+24]  ; 0x18
+    mov rax, QWORD PTR [rax+16]  ; 0x10
+    mov QWORD PTR [ui_font_orig], rax
+    pop rax
+
+    ; Original function start
+    mov rax, rsp
+    push rbx
+    push r14
+    sub rsp, 88  ; 0x58
+    cmp QWORD PTR [rcx+24], 0  ; 0x18
+
+    ; Jump back to original function
+    jmp ui_font_addr_hook_ret
+ui_font_addr_hook endp
+
+
+extern ui_font_replace_hook_ret:QWORD
+extern ui_font_data_size:QWORD
+extern ui_font_buf_ptr:QWORD
+
+; Replaces the pointer to the game UI font data
+ui_font_replace_hook proc
+    ; Original function start
+    mov r8d, r10d
+    mov rsi, rdx
+    call QWORD PTR [rax+8]
+
+    ; Check whether to load replacement font
+    push rax
+    mov rax, QWORD PTR [ui_font_data_size]
+    cmp rax, 0
+    pop rax
+    je lbl_ui_font_replace_hook_orig_instructions
+
+    ; Check whether address matches original UI font buffer address
+    push rax
+    mov rax, QWORD PTR [rax+24]  ; 0x18
+    cmp rax, QWORD PTR [ui_font_orig]
+    pop rax
+    jne lbl_ui_font_replace_hook_orig_instructions
+    
+    ; Replace font data address and size
+    push rbx
+    mov rbx, QWORD PTR [ui_font_data_size]
+    mov QWORD PTR [rax+32], rbx  ; 0x20
+    mov rbx, QWORD PTR [ui_font_buf_ptr]
+    mov QWORD PTR [rax+24], rbx  ; 0x18
+    ; Erase saved font address
+    mov QWORD PTR [ui_font_orig], 0
+    pop rbx
+
+    ; More original instructions
+    lbl_ui_font_replace_hook_orig_instructions:
+    mov rbx, rax
+    test rax, rax
+
+    ; Jump back to original function
+    jmp ui_font_replace_hook_ret
+ui_font_replace_hook endp
+
 end

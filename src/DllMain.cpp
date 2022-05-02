@@ -15,7 +15,6 @@ const char *cfg_file = ".\\DXMD_Mod.ini";
 sp::io::ps_ostream debug;
 
 // Configurable settings
-extern nlohmann::json json;
 std::string log_file = ".\\DXMD_Mod.log";
 extern "C" uint8_t translations_enabled;
 extern "C" uint8_t debug_resid_map;
@@ -40,8 +39,9 @@ DWORD64 dxmd_size = 0;    // DXMD.exe memory size
 
 extern void install_pre_hook();
 extern void load_translation_json(const char* fpath);
+extern void load_ui_font(const char* fpath);
 extern std::string calculate_file_md5(std::string& fpath, size_t read_sz = 1048576 /* 1MB */);
-extern BOOL get_module_size(HMODULE hModule, LPVOID* lplpBase, PDWORD64 lpdwSize);
+extern BOOL get_module_size(HMODULE hmodule, LPVOID* lplp_base, PDWORD64 lpdw_size);
 
 
 BOOL WINAPI DllMain(HINSTANCE hinst_dll, DWORD fdw_reason, LPVOID lpv_reserved)
@@ -224,6 +224,8 @@ extern "C" void* submgr_startsubs_get_subs_data_instr;
 extern "C" void* vidscreen_init_func;
 extern "C" void* menuscreen_init_func;
 extern "C" void* renderplayer_start_hook_addr;
+extern "C" void* ui_font_addr_hook_addr;
+extern "C" void* ui_font_replace_hook_addr;
 
 extern "C" void* resid_record_mapping_func;
 
@@ -256,6 +258,9 @@ void init_settings()
         menuscreen_init_func = (void*)(dxmd_base + 0x3B3B540);
         renderplayer_start_hook_addr = (void*)(dxmd_base + 0x3615ECC);
 
+        ui_font_addr_hook_addr = (void*)(dxmd_base + 0x367ED20);
+        ui_font_replace_hook_addr = (void*)(dxmd_base + 0x494834D);
+
         resid_record_mapping_func = (void*)(dxmd_base + 0x3A37490);
     }
     else if (exe_md5 == "3745fa30bf3f607a58775f818c5e0ac0"     // v1.19-801.0 GoG
@@ -279,6 +284,9 @@ void init_settings()
         menuscreen_init_func = (void*)(dxmd_base + 0x7AD3A0);
         renderplayer_start_hook_addr = (void*)(dxmd_base + 0x2E2473);
 
+        ui_font_addr_hook_addr = (void*)(dxmd_base + 0x344730);
+        ui_font_replace_hook_addr = (void*)(dxmd_base + 0x14FDAAD);
+
         resid_record_mapping_func = (void*)(dxmd_base + 0x6C10D0);
     }
     else if (exe_md5 == "a47cbe45e694dd57ec0d141fd7854589")  // Breach v1.15-758.0 Steam
@@ -301,6 +309,9 @@ void init_settings()
         menuscreen_init_func = (void*)(dxmd_base + 0x7ACEF0);  // Called a few instructions after vidscreen_init_func
         renderplayer_start_hook_addr = (void*)(dxmd_base + 0x2E2853);
 
+        ui_font_addr_hook_addr = (void*)(dxmd_base + 0x344840);
+        ui_font_replace_hook_addr = (void*)(dxmd_base + 0x14FBEAD);
+
         resid_record_mapping_func = (void*)(dxmd_base + 0x6C14D0);
     }
     else
@@ -319,8 +330,11 @@ void init_settings()
     debug.print("DebugResourceIDMapping=" + std::to_string(debug_resid_map) + "\n");
 
     char cfg_str[MAX_PATH];
-    GetPrivateProfileString("Language", "StringsJSON", "", cfg_str, MAX_PATH, cfg_file);
+    size_t cfg_str_len = GetPrivateProfileString("Language", "StringsJSON", "", cfg_str, MAX_PATH, cfg_file);
     load_translation_json(cfg_str);
+
+    cfg_str_len = GetPrivateProfileString("Language", "UIFont", "", cfg_str, MAX_PATH, cfg_file);
+    load_ui_font(cfg_str);
 }
 
 

@@ -49,6 +49,12 @@ extern "C" void* renderplayer_start_hook_addr = (void*)0x143615ECC;  // AoB (aft
 extern "C" void* renderplayer_video_id_hook_ret = NULL;
 
 
+extern "C" void* ui_font_addr_hook_addr = (void*)0x14367ED20;  // AoB (after deobfuscation): 48 ?? ?? 53 41 56 48 83 EC 58 48 83 79 18 00
+extern "C" void* ui_font_addr_hook_ret = NULL;
+extern "C" void* ui_font_replace_hook_addr = (void*)0x14494834D;  // AoB (after deobfuscation): ?? ?? ?? 48 ?? ?? ff 50 08 48 ?? ?? 48 85 c0 74 ?? 4c 8b 08
+extern "C" void* ui_font_replace_hook_ret = NULL;
+
+
 extern "C" void* resid_record_mapping_func = (void*)0x143A37490;  // AoB: 48 89 5C 24 10 48 89 6C 24 18 56 57 41 56 48 83 ec 70 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? e8
 extern "C" void* resid_record_mapping_hook_ret = NULL;
 

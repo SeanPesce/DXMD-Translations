@@ -46,6 +46,8 @@ extern "C" void uicredits_video_id_hook();
 extern "C" void submgr_data_hook();
 extern "C" void vidscreen_init_hook();
 extern "C" void renderplayer_video_id_hook();
+extern "C" void ui_font_addr_hook();
+extern "C" void ui_font_replace_hook();
 
 extern "C" void resid_record_mapping_hook();
 
@@ -81,7 +83,7 @@ BOOL get_module_size(HMODULE hmodule, LPVOID* lplp_base, PDWORD64 lpdw_size)
 }
 
 
-// @TODO: More error-checking - currently crashes if a required JSON field does not exist
+
 void load_translation_json(const char* fpath)
 {
     if (!fpath || !strnlen_s(fpath, MAX_PATH))
@@ -265,6 +267,60 @@ void load_translation_json(const char* fpath)
 }
 
 
+
+void load_ui_font(const char* fpath)
+{
+    if (!fpath || !strnlen_s(fpath, MAX_PATH))
+    {
+        ui_font_data_size = 0;
+        debug.print("No UI font file specified.\n");
+        return;
+    }
+
+    debug.print("Loading UI font file: " + std::string(fpath) + "\n");
+
+    // Check if file exists
+    std::ifstream in_file(fpath, std::ios::in|std::ios::binary);
+    if (!in_file.good())
+    {
+        ui_font_data_size = 0;
+        std::string err_msg = "Failed to find UI font file:\n  " + std::string(fpath) + "\n";
+        debug.print(err_msg);
+        MessageBox(NULL, err_msg.c_str(), "WARNING", MB_OK | MB_SETFOREGROUND | MB_TOPMOST | MB_APPLMODAL);
+        return;
+    }
+
+    // Get file size
+    in_file.ignore(std::numeric_limits<std::streamsize>::max());
+    std::streamsize file_sz = in_file.gcount();
+    in_file.clear();  // Reset EOF flag
+    in_file.seekg(0, std::ios_base::beg);
+
+    if (file_sz > sizeof(ui_font_buf))
+    {
+        ui_font_data_size = 0;
+        std::string err_msg = "UI font file exceeds buffer size of " + std::to_string(sizeof(ui_font_buf)) + " bytes. Contact the developer to increase the buffer size.";
+        debug.print(err_msg);
+        MessageBox(NULL, err_msg.c_str(), "WARNING", MB_OK | MB_SETFOREGROUND | MB_TOPMOST | MB_APPLMODAL);
+        in_file.close();
+        return;
+    }
+
+    in_file.read((char*)ui_font_buf, file_sz);
+    if (in_file.fail())
+    {
+        ui_font_data_size = 0;
+        std::string err_msg = "Error when reading data from UI font file:\n  " + std::string(fpath) + "\n";
+        debug.print(err_msg);
+        MessageBox(NULL, err_msg.c_str(), "WARNING", MB_OK | MB_SETFOREGROUND | MB_TOPMOST | MB_APPLMODAL);
+        return;
+    }
+
+    ui_font_data_size = file_sz;
+}
+
+
+
 // Returns 0 if the string was found; returns 1 otherwise
 extern "C" int get_textlist_translation_string(uint64_t res_id, uint32_t str_id, std::string& out)
 {
@@ -337,6 +393,10 @@ extern "C" void install_translation_hooks()
     sp::mem::code::x64::inject_jmp_14b(submgr_startsubs_get_subs_data_instr, &submgr_startsubs_data_hook_ret, 3, submgr_data_hook);
     sp::mem::code::x64::inject_jmp_14b(vidscreen_init_func, &vidscreen_init_hook_ret, 4, vidscreen_init_hook);
     sp::mem::code::x64::inject_jmp_14b(renderplayer_start_hook_addr, &renderplayer_video_id_hook_ret, 0, renderplayer_video_id_hook);
+
+    // UI font hooks
+    sp::mem::code::x64::inject_jmp_14b(ui_font_addr_hook_addr, &ui_font_addr_hook_ret, 1, ui_font_addr_hook);
+    sp::mem::code::x64::inject_jmp_14b(ui_font_replace_hook_addr, &ui_font_replace_hook_ret, 1, ui_font_replace_hook);
 
     if (resid_record_mapping_func && debug_resid_map)
     {
