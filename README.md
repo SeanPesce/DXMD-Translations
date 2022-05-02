@@ -31,11 +31,14 @@ If you find any bugs, please contact me on [GitHub](https://github.com/SeanPesce
 ## Built With  
  * [Niels Lohmann's JSON for Modern C++](https://github.com/nlohmann/json)  
  * [Stephan Brumme's Portable C++ Hashing Library](https://github.com/stbrumme/hash-library)  
- * [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/)  
+ * [StudioTypo's *A Space* Font Demo](https://www.dafont.com/a-space.font) - For additional Turkish character support  
+ * [Visual Studio](https://visualstudio.microsoft.com/downloads/)  
 
 
 ## Acknowledgements  
  * **[SinnerClown Çeviri](https://sinnerclownceviri.com/)**, the Turkish translation group that originally contacted me with this project idea. They're also responsible for the Turkish translation data set. The SinnerClown forum thread about this mod can be found [here](https://sinnerclownceviri.com/threads/deus-ex-mankind-divided-tuerkce-yama-projemiz-baslamistir.870/).  
+ * **[Lazenes](https://sinnerclownceviri.com/members/lazenes.1/)**, the Turkish translation project manager and creator of the extended font that added support for the full Turkish alphabet.  
+ 
 
 
 ## License  
