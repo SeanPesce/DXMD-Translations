@@ -12,14 +12,14 @@
 This mod enables string replacement in [Deus Ex: Mankind Divided](http://store.steampowered.com/app/337000) and [Deus Ex: Breach](http://store.steampowered.com/app/555450) to facilitate game translation to languages that aren't officially supported (e.g., Turkish). The framework loads in-game strings from a JSON file specified in the configuration, allowing anyone to create or modify their own translation set.  
 
 ## Installation  
-Copy **version.dll**, **DXMD_Mod.ini**, and **strings.json** into the `\retail\` directory (usually `C:\Program Files (x86)\Steam\SteamApps\common\Deus Ex Mankind Divided\retail`).  
+Copy **version.dll**, **DXMD_Mod.ini**, **strings.json**, and (if necessary) your custom font into the `\retail\` directory (usually `C:\Program Files (x86)\Steam\SteamApps\common\Deus Ex Mankind Divided\retail`).  
 
 **Note:** The [latest MSVC Redistributable](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist) must be installed to run this mod. If you get an error about a missing `vcruntime140_1.dll`, you probably don't have it installed.  
 
-## Default key-binds  
+## Keybinds  
 None yet.
   
-You can change key-binds and other settings by navigating to your `\Deus Ex Mankind Divided\retail\` folder and editing `DXMD_Mod.ini`.  
+You can change keybinds and other settings by navigating to your `\Deus Ex Mankind Divided\retail\` folder and editing `DXMD_Mod.ini`.  
 
 ## **[Download the latest version here!](https://github.com/SeanPesce/DXMD-Translations/releases)**  
 
