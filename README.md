@@ -36,7 +36,7 @@ If you find any bugs, please contact me on [GitHub](https://github.com/SeanPesce
 
 
 ## Acknowledgements  
- * **[SinnerClown Çeviri](https://sinnerclownceviri.com/)**, the Turkish translation group that originally contacted me with this project idea. They're also responsible for the Turkish translation data set. The SinnerClown forum thread about this mod can be found [here](https://sinnerclownceviri.com/threads/deus-ex-mankind-divided-tuerkce-yama-projemiz-baslamistir.870/).  
+ * **[SinnerClown Çeviri](https://sinnerclownceviri.com/)**, the Turkish translation group that originally contacted me with this project idea. They're also responsible for the Turkish translation data set. The SinnerClown forum thread about this mod can be found [here](https://sinnerclownceviri.com/threads/deus-ex-mankind-divided-tuerkce-yama-projemiz-baslamistir.870/), and the Turkish build can also be found on [NexusMods](https://www.nexusmods.com/deusexmankinddivided/mods/20).  
  * **[Lazenes](https://sinnerclownceviri.com/members/lazenes.1/)**, the Turkish translation project manager and creator of the extended font that added support for the full Turkish alphabet.  
  * **[Ashtro](https://old.reddit.com/user/Ashtro101)**, who translated the Arabic dialog in the opening cutscene of the game (this dialog originally had no subtitles).  
  
