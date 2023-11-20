@@ -44,7 +44,8 @@ If you find any bugs, please contact me on [GitHub](https://github.com/SeanPesce
 
 
 ## License  
-None yet.
+
+[GNU General Public License v2.0](LICENSE)  
 
 
 ---------------------------------------------
