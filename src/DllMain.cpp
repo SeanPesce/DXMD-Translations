@@ -314,6 +314,31 @@ void init_settings()
 
         resid_record_mapping_func = (void*)(dxmd_base + 0x6C14D0);
     }
+    else if (exe_md5 == "ae3d1f9239eb9630d99b83bbc8a28ad2")  // v1.19.1.1 Epic Games Store
+    {
+        prehook_inject_addr = NULL;
+        prehook_ret = NULL;
+        get_mem_mgr_func = (void*)(dxmd_base + 0x36320);
+
+        textlist_installer_func = (void*)(dxmd_base + 0x3652A0);
+        textlist_str_alloc_call_instruction = (void*)(dxmd_base + 0x362B6B);
+        textlist_str_alloc_func = (void*)(dxmd_base + 0x2A1C0);
+
+        loadingscreen_startsubs_func = (void*)(dxmd_base + 0xED0410);
+        loadingscreen_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0xED04CD);
+        str_eq_operator_func = (void*)(dxmd_base + 0x267E0);
+        uielement_playvid_func = (void*)(dxmd_base + 0x1418F30);
+        uicredits_playvid_func = (void*)(dxmd_base + 0x1418E60);
+        submgr_startsubs_get_subs_data_instr = (void*)(dxmd_base + 0x3672A7);
+        vidscreen_init_func = (void*)(dxmd_base + 0x131D7F0);
+        menuscreen_init_func = (void*)(dxmd_base + 0x7AC960);  // Called a few instructions after vidscreen_init_func
+        renderplayer_start_hook_addr = (void*)(dxmd_base + 0x2E1F43);
+
+        ui_font_addr_hook_addr = (void*)(dxmd_base + 0x344250);
+        ui_font_replace_hook_addr = (void*)(dxmd_base + 0x14F714D);
+
+        resid_record_mapping_func = (void*)(dxmd_base + 0x6C1240);
+    }
     else
     {
         debug.print("[ERROR] Unrecognized game version. Exiting...\n");
