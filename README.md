@@ -29,6 +29,7 @@ If you find any bugs, please contact me on [GitHub](https://github.com/SeanPesce
 
 
 ## Built With  
+ * [Google's Noto Font](https://fonts.google.com/noto/) - For Chinese character support
  * [Niels Lohmann's JSON for Modern C++](https://github.com/nlohmann/json)  
  * [Stephan Brumme's Portable C++ Hashing Library](https://github.com/stbrumme/hash-library)  
  * [StudioTypo's *A Space* Font Demo](https://www.dafont.com/a-space.font) - For additional Turkish character support  
