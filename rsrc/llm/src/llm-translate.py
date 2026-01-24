@@ -642,7 +642,7 @@ TRANSLATOR_CONTACT = 'jcd@unatco.gov'
 OVERWRITE = False  # Overwrite translated file when re-running the script
 COLOR_LOG_OUTPUT = True
 ALWAYS_SPLIT_ON_FORMAT_STRING_DELIMS = False  # Split and re-build textlist format strings that use "{0}" delimiters (these sometimes get mangled by the LLM)
-ALWAYS_SPLIT_ON_SUBTITLE_TIMESTAMP_DELIMS = False  # Split and re-build subtitle strings that use "//(1.00,2.99)\\\\" timestamp delimiters (these often get mangled by the LLM)
+ALWAYS_SPLIT_ON_SUBTITLE_TIMESTAMP_DELIMS = False  # Split and re-build subtitle strings that use "//(1.00,2.99)\\" timestamp delimiters (these often get mangled by the LLM)
 
 # Parse first command-line argument to optionally override target language
 if len(sys.argv) > 1 and sys.argv[1].strip() in LANGUAGES:
@@ -736,7 +736,7 @@ def translate_string(s):
                 temperature=0.0
             )
             translated_item = response.choices[0].message.content.strip()
-            translated_item = translated_item.replace('\\\n','').strip()  # Artifact that sometimes occurs on strings with newlines
+            translated_item = translated_item.replace('\\\n','').strip()  # Artifact that sometimes occurs on strings with newlines (?)
             if prefix:
                 s = prefix + s
                 translated_item = prefix + translated_item
@@ -769,9 +769,9 @@ def split_str_by_format_str_delimiters(s):
 
 
 def split_str_by_slash_delimiters(s):
-    # Some subtitles have timestamp delimiters like: //(0.000)\\\\ or //(0.000,1.111)\\\\
+    # Some subtitles have timestamp delimiters like: //(0.000)\\ or //(0.000,1.111)\\
     # (These often get mangled by the LLM)
-    pattern = r'(//\s*\([0-9\.,\s]+\)\s*\\\\)'
+    pattern = r'(//\s*\([0-9\.,\s]+\)\s*\\)'
     # re.split returns a list, splitting on the pattern
     parts = re.split(pattern, s)
     # Remove empty strings resulting from leading/trailing delimiters
@@ -861,7 +861,7 @@ def translate_subtitles():
                         translated_subtitle[kkkk] = ''
                         split_str = split_str_by_slash_delimiters(subs_set[kkkk])
                         if ALWAYS_SPLIT_ON_SUBTITLE_TIMESTAMP_DELIMS:
-                            # Split and re-build strings that use "//(1.00,2.99)\\\\" timestamp delimiters (these often get mangled by the LLM)
+                            # Split and re-build strings that use "//(1.00,2.99)\\" timestamp delimiters (these often get mangled by the LLM)
                             for subtitle_part in split_str:
                                 translated_subtitle[kkkk] += translate_string(subtitle_part)
                         else:
