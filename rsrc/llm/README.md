@@ -36,5 +36,5 @@ TRANSLATOR_CONTACT = 'jcd@unatco.gov'
 <p align="center">
 <img align="center" title="Example output from the LLM translation Python script (in progress)" src="https://github.com/SeanPesce/DXMD-Translations/blob/master/image/llm-translate-output-01.png?raw=true" alt="Example output from the LLM translation Python script (in progress)" width="75%">
 <br><br>
-<img align="center" title="Example output from the LLM translation Python script (finished)" src="https://github.com/SeanPesce/DXMD-Translations/blob/master/image/llm-translate-output-02?raw=true" alt="Example output from the LLM translation Python script (finished)" width="75%">
+<img align="center" title="Example output from the LLM translation Python script (finished)" src="https://github.com/SeanPesce/DXMD-Translations/blob/master/image/llm-translate-output-02.png?raw=true" alt="Example output from the LLM translation Python script (finished)" width="75%">
 </p>  
