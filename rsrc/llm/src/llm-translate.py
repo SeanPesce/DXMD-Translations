@@ -634,15 +634,14 @@ def str_color_red(s):
 # =================== CONFIG ====================
 ORIGINAL_LANGUAGE_FILE = 'en.json'
 LANGUAGE_SHORT = 'el'
-BASE_URL = 'http://192.168.1.69:7987/api'
+BASE_URL = 'http://192.168.1.123:1234/api'
 API_KEY = 'sk-00000000000000000000000000000000'  # For example, an Open WebUI API key
 MODEL_NAME = 'translategemma-4b-it'
 TRANSLATOR = 'Sean Pesce'
 TRANSLATOR_CONTACT = 'jcd@unatco.gov'
 OVERWRITE = False  # Overwrite translated file when re-running the script
 COLOR_LOG_OUTPUT = True
-ALWAYS_SPLIT_ON_FORMAT_STRING_DELIMS = False  # Split and re-build textlist format strings that use "{0}" delimiters (these sometimes get mangled by the LLM)
-ALWAYS_SPLIT_ON_SUBTITLE_TIMESTAMP_DELIMS = False  # Split and re-build subtitle strings that use "//(1.00,2.99)\\" timestamp delimiters (these often get mangled by the LLM)
+ALWAYS_SPLIT_ON_SPECIAL_DELIMS = False  # Force split and re-build strings that use "//(1.00,2.99)\\" and/or "{0}" delimiters (these often get mangled by the LLM)
 
 # Parse first command-line argument to optionally override target language
 if len(sys.argv) > 1 and sys.argv[1].strip() in LANGUAGES:
@@ -736,7 +735,7 @@ def translate_string(s):
                 temperature=0.0
             )
             translated_item = response.choices[0].message.content.strip()
-            translated_item = translated_item.replace('\\\n','').strip()  # Artifact that sometimes occurs on strings with newlines (?)
+            #translated_item = translated_item.replace('\\\n','').strip()  # Artifact that sometimes occurs on strings with newlines (?)
             if prefix:
                 s = prefix + s
                 translated_item = prefix + translated_item
@@ -758,24 +757,18 @@ def translate_string(s):
     return None
 
 
-def split_str_by_format_str_delimiters(s):
-    # Some textlist entries have format-string delimiters like: {0} or {6}
-    # (These can get mangled by the LLM)
-    pattern = r'(\s*\{[0-9]\}\s*)'
-    # re.split returns a list, splitting on the pattern
-    parts = re.split(pattern, s)
-    # Remove empty strings resulting from leading/trailing delimiters
-    return [part for part in parts if part]
-
-
-def split_str_by_slash_delimiters(s):
-    # Some subtitles have timestamp delimiters like: //(0.000)\\ or //(0.000,1.111)\\
+def split_str_by_special_delimiters(s):
+    # Some textlist/subtitles have timestamp delimiters like: //(0.000)\\ or //(0.000,1.111)\\
     # (These often get mangled by the LLM)
-    pattern = r'(//\s*\([0-9\.,\s]+\)\s*\\)'
+    # And some textlist entries have format-string delimiters like: {0} or {6}
+    # (These can get mangled by the LLM)
+    pattern = r'((?://\s*\([0-9\.,\s]+\)\s*\\\\)|(?://\s*\([0-9\.,\s]+\)\s*\\\\))'
     # re.split returns a list, splitting on the pattern
     parts = re.split(pattern, s)
     # Remove empty strings resulting from leading/trailing delimiters
-    return [part for part in parts if part]
+    parts = [part for part in parts if part]
+    #print(str_color_red(json.dumps(parts, indent='  ', ensure_ascii=False)), file=sys.stderr)
+    return parts
 
 
 def translate_textlists():
@@ -802,16 +795,16 @@ def translate_textlists():
                     continue
                 
                 translated_item[kk] = ''
-                split_str = split_str_by_format_str_delimiters(data[kk])
-                if ALWAYS_SPLIT_ON_FORMAT_STRING_DELIMS:
-                    # Split and re-build strings that use "{0}" delimiters (these can get mangled by the LLM)
+                split_str = split_str_by_special_delimiters(data[kk])
+                if ALWAYS_SPLIT_ON_SPECIAL_DELIMS:
+                    # Split and re-build strings that use "//(1.00,2.99)\\" or "{0}" delimiters (these often get mangled by the LLM)
                     for str_part in split_str:
                         translated_item[kk] += translate_string(str_part)
                 else:
                     translated_item[kk] = translate_string(data[kk])
-                    # Check that no format string delimiters were dropped. If they were, we force a re-translation using the split method
+                    # Check that no delimiters were dropped. If they were, we force a re-translation using the split method
                     if len(split_str) > 1:
-                        split_translated = split_str_by_format_str_delimiters(translated_item[kk])
+                        split_translated = split_str_by_special_delimiters(translated_item[kk])
                         if len(split_translated) != len(split_str):
                             print(f'{str_color_orange("[WARNING]")} Format string delimiter was dropped during translation. Re-translating using split string method...', file=sys.stderr)
                             translated_item[kk] = ''
@@ -859,16 +852,16 @@ def translate_subtitles():
                             continue
                         
                         translated_subtitle[kkkk] = ''
-                        split_str = split_str_by_slash_delimiters(subs_set[kkkk])
-                        if ALWAYS_SPLIT_ON_SUBTITLE_TIMESTAMP_DELIMS:
-                            # Split and re-build strings that use "//(1.00,2.99)\\" timestamp delimiters (these often get mangled by the LLM)
+                        split_str = split_str_by_special_delimiters(subs_set[kkkk])
+                        if ALWAYS_SPLIT_ON_SPECIAL_DELIMS:
+                            # Split and re-build strings that use "//(1.00,2.99)\\" or "{0}" delimiters (these often get mangled by the LLM)
                             for subtitle_part in split_str:
                                 translated_subtitle[kkkk] += translate_string(subtitle_part)
                         else:
                             translated_subtitle[kkkk] = translate_string(subs_set[kkkk])
-                            # Check that no timestamp delimiters were dropped. If they were, we force a re-translation using the split method
+                            # Check that no delimiters were dropped. If they were, we force a re-translation using the split method
                             if len(split_str) > 1:
-                                split_translated = split_str_by_slash_delimiters(translated_subtitle[kkkk])
+                                split_translated = split_str_by_special_delimiters(translated_subtitle[kkkk])
                                 if len(split_translated) != len(split_str):
                                     print(f'{str_color_orange("[WARNING]")} Timestamp delimiter was dropped during translation. Re-translating using split string method...', file=sys.stderr)
                                     translated_subtitle[kkkk] = ''
