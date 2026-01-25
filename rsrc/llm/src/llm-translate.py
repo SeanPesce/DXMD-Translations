@@ -682,6 +682,14 @@ SKIP_TRANSLATION = {
     'Português (Brasil)',
     'Japanese',
 }
+# Make sure we translate the source language
+dont_skip = None
+for s in SKIP_TRANSLATION:
+    if SOURCE_LANGUAGE.lower() == s.lower():
+        dont_skip = s
+        break
+if dont_skip:
+    SKIP_TRANSLATION.discard(dont_skip)
 
 def translate_string(s):
     global DATA_TRANSLATED
@@ -762,7 +770,7 @@ def split_str_by_special_delimiters(s):
     # (These often get mangled by the LLM)
     # And some textlist entries have format-string delimiters like: {0} or {6}
     # (These can get mangled by the LLM)
-    pattern = r'((?://\s*\([0-9\.,\s]+\)\s*\\\\)|(?://\s*\([0-9\.,\s]+\)\s*\\\\))'
+    pattern = r'((?://\s*\([0-9\.,\s]+\)\s*\\\\)|(?:\s*\{[0-9]\}\s*))'
     # re.split returns a list, splitting on the pattern
     parts = re.split(pattern, s)
     # Remove empty strings resulting from leading/trailing delimiters
