@@ -31,6 +31,10 @@ TRANSLATOR_CONTACT = 'jcd@unatco.gov'
 
 * Run the script: `python3 llm-translate.py`  
 
+There are approximately 100,000 strings to translate (~70,000 after removing duplicates and non-language strings), so depending on your setup (hardware, model, etc.)
+it could take hours (or days) to finish. Strings that fail to translate will be `null` in the output JSON file. If translation hangs on a string, you can try unloading
+the model in LM Studio (it will be automatically reloaded when the script retries the translation).
+
 ## Example Output
 
 <p align="center">
