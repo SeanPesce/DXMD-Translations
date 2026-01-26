@@ -813,7 +813,7 @@ def translate_string(s, ignore_rtl=False):
             return translated_item
         except Exception as err:
             if i < (RETRIES-1):
-                print(f'{str_color_orange("[WARNING]")} (Attempt {i}/{RETRIES}) {err} When attempting to translate string: {json.dumps(s)}', file=sys.stderr)
+                print(f'{str_color_orange("[WARNING]")} (Attempt {i+1}/{RETRIES}) {err} When attempting to translate string: {json.dumps(s)}', file=sys.stderr)
                 time.sleep(RETRY_DELAY)
             else:
                 #raise err
