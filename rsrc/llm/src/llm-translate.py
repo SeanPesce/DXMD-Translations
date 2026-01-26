@@ -685,6 +685,9 @@ SKIP_TRANSLATION = {
     'Español (América Latina)',
     'Português (Brasil)',
     'Japanese',
+    
+    'Facebook',
+    'YouTube',
 }
 # Make sure we translate the source language
 dont_skip = None
