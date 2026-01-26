@@ -870,7 +870,7 @@ def translate_textlists():
                     if len(split_str) > 1:
                         split_translated = split_str_by_special_delimiters(translated_item[kk])
                         if len(split_translated) != len(split_str):
-                            print(f'{str_color_orange("[WARNING]")} Format string delimiter was dropped during translation. Re-translating using split string method...', file=sys.stderr)
+                            print(f'{str_color_orange("[WARNING]")} Special string delimiter was dropped during translation. Re-translating using split string method...', file=sys.stderr)
                             translated_item[kk] = ''
                             for str_part in split_str:
                                 translated_item[kk] += translate_string(str_part)
