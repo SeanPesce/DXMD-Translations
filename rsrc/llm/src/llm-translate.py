@@ -659,6 +659,10 @@ INDENT = '  '  # Indentation for formatted JSON data
 RETRIES = 10
 RETRY_DELAY = 5  # seconds
 ENCODING = 'utf8'
+
+RIGHT_TO_LEFT=False
+if LANGUAGE.lower() in {'arabic','fulah','hebrew','kurdish','pashto','persian','punjabi','urdu',}:
+    RIGHT_TO_LEFT = True
 # =================== /CONFIG ===================
 
 TOTAL_STRINGS = 0
@@ -691,7 +695,43 @@ for s in SKIP_TRANSLATION:
 if dont_skip:
     SKIP_TRANSLATION.discard(dont_skip)
 
-def translate_string(s):
+
+def convert_rtl_string(s):
+    # The DXMD game engine doesn't support right-to-left, so we have to manually craft it
+    # Reverse string except for numeric data
+    tokens = re.findall(r'\d+|\D', s)  # Multi-digit number, or any non-digit character
+    tokens.reverse()
+    s = ''.join(tokens)
+    
+    # Flip position-dependent characters
+    reverse_chars = {
+        '[': ']',
+        ']': '[',
+        '(': ')',
+        ')': '(',
+        '<': '>',
+        '>': '<',
+        '«': '»',
+        '»': '«',
+        #'“': '”',
+        #'”': '“',
+        '“': '"',  # Convert to position-agnostic double quote instead
+        '”': '"',  # Convert to position-agnostic double quote instead
+        '„': '"',  # Convert to position-agnostic double quote instead
+        #'‘': '’',
+        #'’': '‘',
+        '‘': '\'',  # Convert to position-agnostic apostrophe instead
+        '’': '\'',  # Convert to position-agnostic apostrophe instead
+        #'“': '„',
+        #'„': '“'
+    }
+    #if '„' in s:
+    #    reverse_chars['“'] = '„'
+    s = ''.join(reverse_chars.get(ch, ch) for ch in s)
+    return s
+
+
+def translate_string(s, ignore_rtl=False):
     global DATA_TRANSLATED
     global TOTAL_STRINGS
     global TOTAL_STRINGS_TRANSLATED
@@ -750,6 +790,19 @@ def translate_string(s):
             if suffix:
                 s = s + suffix
                 translated_item = translated_item + suffix
+            # Don't reverse RTL strings that aren't rendered in the game engine
+            splash_screen_strings = {
+                'Play Deus Ex: Mankind Divided™',
+                'Play Deus Ex: Breach™',
+                'Website',
+                'Facebook',
+                'YouTube',
+                'Technical Support',
+            }
+            if s in splash_screen_strings or (s == translated_item):
+                ignore_rtl = True
+            if (not ignore_rtl) and RIGHT_TO_LEFT:
+                translated_item = convert_rtl_string(translated_item)
             print(f'{str_color_purple(json.dumps(s, ensure_ascii=False))}  ->  {str_color_cyan(json.dumps(translated_item, ensure_ascii=False))}', file=sys.stderr)
             if translated_item and (s not in TRANSLATION_CACHE):
                 TRANSLATION_CACHE[s] = translated_item
@@ -927,7 +980,7 @@ for k in DATA_ORIGINAL:
     elif k == 'dev_messages':
         DATA_TRANSLATED[k] = dict()
         for kk in DATA_ORIGINAL[k]:
-            DATA_TRANSLATED[k][kk] = translate_string(DATA_ORIGINAL[k][kk])
+            DATA_TRANSLATED[k][kk] = translate_string(DATA_ORIGINAL[k][kk], ignore_rtl=True)
     else:
         DATA_TRANSLATED[k] = DATA_ORIGINAL[k]
 
