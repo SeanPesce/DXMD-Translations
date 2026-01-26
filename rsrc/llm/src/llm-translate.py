@@ -826,7 +826,7 @@ def split_str_by_special_delimiters(s):
     # (These often get mangled by the LLM)
     # And some textlist entries have format-string delimiters like: {0} or {6}
     # (These can get mangled by the LLM)
-    pattern = r'((?://\s*\([0-9\.,\s]+\)\s*\\\\)|(?:\s*\{[0-9]\}\s*))'
+    pattern = r'((?://\s*\([0-9\.,]+\)\s*\\\\)|(?:\s*\{[0-9]\}\s*))'
     # re.split returns a list, splitting on the pattern
     parts = re.split(pattern, s)
     # Remove empty strings resulting from leading/trailing delimiters
