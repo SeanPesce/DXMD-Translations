@@ -741,6 +741,9 @@ def translate_string(s, ignore_rtl=False):
     TOTAL_STRINGS += 1
     if (not s) or (not s.strip()):
         return s
+    if s.strip().lower() == SOURCE_LANGUAGE.strip().lower():
+        # Change the source language to the target language so that it is displayed correctly in the game menus
+        s = LANGUAGE
     # Check if this string was already translated
     if s.strip() in TRANSLATION_CACHE:
         return TRANSLATION_CACHE[s.strip()]
