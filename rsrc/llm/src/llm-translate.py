@@ -765,7 +765,7 @@ def translate_string(s, ignore_rtl=False):
     # Check for strings wrapped in special characters (e.g., "[cough]")
     prefix = ''
     suffix = ''
-    wrap_chars = '[](){}-_'
+    wrap_chars = '[]()-_'#{}
     # if s[0] in wrap_chars:
     #     prefix = s[0]
     #     s = s[1:]
