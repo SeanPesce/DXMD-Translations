@@ -689,6 +689,7 @@ SKIP_TRANSLATION = {
     'Facebook',
     'YouTube',
 }
+SKIP_TRANSLATION_LOWER = None
 # Make sure we translate the source language
 dont_skip = None
 for s in SKIP_TRANSLATION:
@@ -697,6 +698,258 @@ for s in SKIP_TRANSLATION:
         break
 if dont_skip:
     SKIP_TRANSLATION.discard(dont_skip)
+
+
+
+# List of in-game passwords that should not be modified
+#   https://deusex.fandom.com/wiki/Passwords_(DXMD)
+#   https://deusex.fandom.com/wiki/A_Criminal_Past_walkthrough#Keycodes_&_Passwords
+IN_GAME_PWS = {
+    '0724',
+    '1114',
+    '1233',
+    '1337',
+    '1423',
+    '1969',
+    '1977',
+    '1980',
+    '1FreeWish',
+    '2027',
+    '2245',
+    '2297',
+    '3014',
+    '3322',
+    '3469',
+    '3497',
+    '3499',
+    '3546',
+    '3579',
+    '3624',
+    '3648',
+    '3677',
+    '3698',
+    '3791',
+    '4110',
+    '4286',
+    '4469',
+    '4679',
+    '4992',
+    '4ndr3wSHU',
+    '5123',
+    '5359',
+    '5439',
+    '5896KLMO1BN',
+    '6014',
+    '6435',
+    '6484',
+    '6632',
+    '6645',
+    '6701',
+    '6912',
+    '7925',
+    '7946',
+    '8236',
+    '8642',
+    '8821',
+    '8822',
+    '8824',
+    '9110',
+    '9316',
+    '9357',
+    '9365',
+    '9378',
+    '9458',
+    '9558',
+    '9643',
+    '9684',
+    '9786',
+    '9824',
+    '9835',
+    '9991',
+    '9992',
+    'AKLVD6681',
+    'AUZ1LU51AT1',
+    'Alli300',
+    'Almeisan',
+    'AnaStefanJelena',
+    'Aphasia5689',
+    'AugBuster001',
+    'AugBuster002',
+    'AugBuster003',
+    'B0TT0PP5',
+    'BBput5841',
+    'BaconChipsDonut',
+    'BertiLLon1870',
+    'Bla14f5ku6',
+    'BuiLtForUs',
+    'CL4NKN3T1ON',
+    'CatBathTime',
+    'Cha12f5g9e',
+    'CharadeYouAre',
+    'Charlieclaw',
+    'Christelle',
+    'Clod04sfd8s',
+    'DELLAROCCA',
+    'DevilToldMe',
+    'DobraNoc',
+    'DriedGrapes',
+    'E4E5QH5',
+    'ELEFSIS',
+    'ELVIRA88',
+    'Egypt2030',
+    'ElectricSpirit',
+    'FURVENT6',
+    'FaithInU',
+    'FrakkingUpTheA',
+    'GBNM45KLP53',
+    'HYPERION',
+    'HorseKing',
+    'ImCarcosa',
+    'JJKPOXZ774',
+    'JLAROUCHE',
+    'KEPLER432B',
+    'KLMVP9951',
+    'LEPTONS',
+    'LKMN01259KNML',
+    'LambScream',
+    'MACHINEGUN',
+    'MASKEDCYBORG',
+    'MUSTBREAKU',
+    'May2020',
+    'McCr49f0eF',
+    'Messier43',
+    'Messier45',
+    'Middleearth',
+    'MoonShine',
+    'N4RDIN3M0R4N0',
+    'NEBUKED',
+    'NMKKHJ223',
+    'NOFATE',
+    'NOMORE',
+    'NanoSpika',
+    'Neuronex1000',
+    #'Neuropozyne',
+    'OCTAVARIUM',
+    'OL519xanadu',
+    'OVCHARKA',
+    'Origami1970',
+    'Ouroboros',
+    'P34T45WF',
+    'P3WP3WS',
+    'PALSEC4654TI',
+    'PALSEC6579AT',
+    'PunchRocket',
+    'Raptor',
+    'RedEyePatched',
+    'S3CUR3SYST3M',
+    'ST33LB3AM5',
+    'STRMSRG',
+    #'SUNGLASSES',
+    'SWD5469',
+    'Sharp007',
+    'Slaw',
+    'SoulSlave',
+    #'Symphony',
+    'T1000',
+    #'TBD',
+    'TheFinalCut',
+    'ThemBones',
+    'TrustNo1',
+    'Ubik',
+    'VCORPP03L',
+    #'VENUS',
+    'VIPsec487Tv',
+    'VODKACHRONIC69',
+    'VREMENA77',
+    'Wiedzmin',
+    'YABLOKA346',
+    'absolution',
+    'andrespoutine',
+    'antares',
+    'arcturus',
+    #'ascension',
+    'brtvz5524',
+    'civilizat10N',
+    'clemenza',
+    'copyreport00',
+    'd3f4gh6',
+    #'dawn',
+    'devotchka',
+    'dormata',
+    'dyc2p0201',
+    'ebert',
+    'everforward',
+    'fireworks',
+    'goldenage',
+    'heartofdarkness',
+    'highdata001',
+    'hjtrv8865',
+    'intermission',
+    'kollerdark',
+    'kristab',
+    'krodine',
+    'legacy2025',
+    'linox2014',
+    'lowzone16',
+    'masaaki',
+    'mcsteamy',
+    'n3wsm4ker',
+    'nardinemorano',
+    'nmkkhj223',
+    'norestforus',
+    'oL519Xanadu',
+    'otarminator',
+    'ou812',
+    'owningthedevil',
+    'paulwestlind',
+    'pozy45',
+    'praisethesun',
+    #'remember',
+    'respawn777',
+    'rosebud',
+    'safeandsecure22',
+    'samithedog',
+    'saveprivateroy',
+    'scheherezade',
+    'secretpocketary',
+    'starlight',
+    'stormsurge',
+    'strengthinunity',
+    'thecause',
+    'thevoidwhichbinds',
+    'tornado',
+    'tuscany2023',
+    'tycoon999',
+    'vedelem',
+    'vincam',
+    'vm451',
+    'withstrangeaeons',
+}
+SKIP_TRANSLATION.update(IN_GAME_PWS)
+
+
+# Textlists to skip (e.g., if they only contain passwords)
+SKIP_TEXTLISTS = {
+    15727827938747724,
+    21394524206646751,
+    32952490151201634,
+    33367695002050062,
+    52516518959670934,
+    5687818836357650,
+    57838673402989992,
+    62575541654534117,
+    63850479627289443,
+    70969920398094849,
+}
+
+SPECIAL_DELIMITER_REGEX = r'((?://\s*\([0-9\.,]+\)\s*\\\\)|(?:\s*\{[0-9]\}\s*))'
+SPECIAL_DELIMITER_AND_PW_REGEX = SPECIAL_DELIMITER_REGEX[1:-1]
+for pw in IN_GAME_PWS:
+    if not pw:
+        continue
+    SPECIAL_DELIMITER_AND_PW_REGEX += '|(?:' + pw + ')'
+SPECIAL_DELIMITER_AND_PW_REGEX = '(' + SPECIAL_DELIMITER_AND_PW_REGEX + ')'
+SPECIAL_DELIMITER_AND_PW_REGEX = re.compile(SPECIAL_DELIMITER_AND_PW_REGEX, flags=re.IGNORECASE)
 
 
 def convert_rtl_string(s):
@@ -738,6 +991,12 @@ def translate_string(s, ignore_rtl=False):
     global DATA_TRANSLATED
     global TOTAL_STRINGS
     global TOTAL_STRINGS_TRANSLATED
+    global SKIP_TRANSLATION_LOWER
+    if not SKIP_TRANSLATION_LOWER:
+      # Initialize case-insensitive string set
+      SKIP_TRANSLATION_LOWER = set()
+      for skip_s in SKIP_TRANSLATION:
+          SKIP_TRANSLATION_LOWER.add(skip_s.lower().strip())
     TOTAL_STRINGS += 1
     if (not s) or (not s.strip()):
         return s
@@ -748,7 +1007,7 @@ def translate_string(s, ignore_rtl=False):
     if s.strip() in TRANSLATION_CACHE:
         return TRANSLATION_CACHE[s.strip()]
     # Check if the string should be skipped
-    if s in SKIP_TRANSLATION:
+    if s.strip().lower() in SKIP_TRANSLATION_LOWER:
         TRANSLATION_CACHE[s] = s
         return s
     # Check if the string has any alphabetic characters (@NOTE: This will probably break things if the source data set is non-English)
@@ -829,7 +1088,8 @@ def split_str_by_special_delimiters(s):
     # (These often get mangled by the LLM)
     # And some textlist entries have format-string delimiters like: {0} or {6}
     # (These can get mangled by the LLM)
-    pattern = r'((?://\s*\([0-9\.,]+\)\s*\\\\)|(?:\s*\{[0-9]\}\s*))'
+    global SPECIAL_DELIMITER_AND_PW_REGEX
+    pattern = SPECIAL_DELIMITER_AND_PW_REGEX #r'((?://\s*\([0-9\.,]+\)\s*\\\\)|(?:\s*\{[0-9]\}\s*))'
     # re.split returns a list, splitting on the pattern
     parts = re.split(pattern, s)
     # Remove empty strings resulting from leading/trailing delimiters
@@ -839,6 +1099,7 @@ def split_str_by_special_delimiters(s):
 
 
 def translate_textlists():
+    global TOTAL_STRINGS
     DATA_TRANSLATED['textlists'] = list()
     textlists_orig = DATA_ORIGINAL['textlists']
     i = 0
@@ -849,6 +1110,11 @@ def translate_textlists():
         #     break
         print(f'{str_color_green("[INFO]")} ({i}/{len(textlists_orig)}) Translating textlist', file=sys.stderr)
         tl = dict()
+        tl_id = textlist.get('id', None)
+        if tl_id in SKIP_TEXTLISTS:
+            print(f'{str_color_green("[INFO]")} Skipping textlist with ID {tl_id}', file=sys.stderr)
+            TOTAL_STRINGS += len(textlist.get('content', list()))
+            continue
         for k in textlist:
             if k != 'content':
                 tl[k] = textlist[k]
@@ -1002,7 +1268,7 @@ while (not OVERWRITE) and os.path.exists(out_fname):
     i += 1
     out_fname = f'{out_fname_base}.{i}'
 print(f'{str_color_green("[INFO]")} Writing translated data to file: {os.path.abspath(out_fname)}', file=sys.stderr)
-with open(out_fname, 'w', encoding=ENCODING) as f:
+with open(out_fname, 'w', encoding=ENCODING, newline='\n') as f:
     f.write(json.dumps(DATA_TRANSLATED, indent=INDENT, ensure_ascii=False))
 
 
