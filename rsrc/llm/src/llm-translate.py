@@ -700,6 +700,127 @@ if dont_skip:
     SKIP_TRANSLATION.discard(dont_skip)
 
 
+# List special tokens for buttons/keybinds (e.g., "[BACKSPACE]")
+BUTTON_IDS = {
+    'AugmentationAssignation_AssignDown',
+    'AugmentationAssignation_AssignLeft',
+    'AugmentationAssignation_AssignQuickButton',
+    'AugmentationAssignation_AssignRight',
+    'AugmentationAssignation_AssignUp',
+    'AugmentationAssignation_Open',
+    'AugmentationA',
+    'AugmentationB',
+    'AugmentationC',
+    'AugmentationD',
+    'AugmentationE',
+    'BACKSPACE',
+    'BreachVR_MapSelection_ZoomOut',
+    'BreachVR_MapSelection_ZoomToggle',
+    'BreachVR_OpenPauseMenuOverlay',
+    'BreachVR_QuickStart',
+    'BumperLeft',
+    'BumperRight',
+    'ButtonFaceBack',
+    'ButtonFaceDown',
+    'ButtonFaceLeft',
+    'ButtonFaceRight',
+    'ButtonFaceUp',
+    'CLOAK',
+    'CoverActive_Toggle',
+    'CoverAiming_Start',
+    'CoverRoundCornerHold',
+    'CoverSwap',
+    'CoverVault',
+    'Crouch',
+    'DpadANY',
+    'DpadDown',
+    'DpadLeft',
+    'DpadRight',
+    'DpadUp',
+    'eInputButtons_BumperLeft',
+    'eInputButtons_BumperRight',
+    'eInputButtons_ButtonFaceLeft',
+    'eInputButtons_TriggerLeft',
+    'eInputButtons_TriggerRight',
+    'EnterCover',
+    'ESCAPE',
+    'Freemind_Quit',
+    'Freemind_Reset',
+    'Hacking_Capture',
+    'Hacking_Fortify',
+    'Hacking_InjectStopWorm',
+    'Hacking_Nuke',
+    'Hacking_UseSoftwareDown',
+    'Hacking_UseSoftwareLeft',
+    'Hacking_UseSoftwareRight',
+    'Hacking_UseSoftwareUp',
+    #'HOLD',
+    #'Hold',
+    'Interact',
+    'InteractHold',
+    'IronSight_Start',
+    'ITEM',
+    'Jump',
+    'LB',
+    'LEGS_SILENCER',
+    'Menu_Accept',
+    'Menu_AugmentationAlternateAction',
+    'Menu_Cancel',
+    'Menu_InGameMenu',
+    'Menu_Inv_Combine',
+    'Menu_Inv_OpenStorage',
+    'Menu_NextMenu',
+    'Menu_OpenInGameMenu',
+    'Menu_OpenPauseMenu',
+    'Menu_OpenPauseMenu_PC',
+    'Menu_OpenQuickInventory',
+    'Menu_PickupShortcut',
+    'Menu_PreviousMenu',
+    'Param1',
+    'Param2',
+    'ParamBase',
+    'ParamBribeDouble',
+    'ParamBribeHigh',
+    'ParamBribe',
+    'ParamFairbanksReward',
+    'ParamHeistFull',
+    'ParamHigh',
+    'ParamLow',
+    'ParamReward',
+    'ParamVeryHigh',
+    'ParamVeryLow',
+    'PieWheel_Cycle',
+    'QuickInventoryShortcuts_Energy',
+    'QuickInventoryShortcuts_Health',
+    'RB',
+    #'RELEASE',
+    #'Release',
+    'RemoteAccessHit',
+    'Sprint',
+    'Start',
+    'StickLeft',
+    'StickRight',
+    'TakedownKill',
+    'TakedownStun',
+    'ThrowBody',
+    'ThrowSecondaryWeapon',
+    'ThumbLeft',
+    'ThumbRight',
+    'TriggerLeft',
+    'TriggerRight',
+    'TYPHOON',
+    'VelocityStrikeActivate',
+    'WeaponFire',
+    'WeaponHolster',
+    'WeaponManagementActivate',
+    'WeaponQuickSwapAmmo',
+    'WeaponReload',
+    'X_RAY',
+    'Y',
+}
+for button_id in BUTTON_IDS:
+    SKIP_TRANSLATION.add(f'[{button_id}]')
+
 
 # List of in-game passwords that should not be modified
 #   https://deusex.fandom.com/wiki/Passwords_(DXMD)
@@ -944,12 +1065,18 @@ SKIP_TEXTLISTS = {
 
 SPECIAL_DELIMITER_REGEX = r'((?://\s*\([0-9\.,]+\)\s*\\\\)|(?:\s*\{[0-9]\}\s*))'
 SPECIAL_DELIMITER_AND_PW_REGEX = SPECIAL_DELIMITER_REGEX[1:-1]
+# Add in-game passwords to regex
 for pw in IN_GAME_PWS:
     if not pw:
         continue
-    SPECIAL_DELIMITER_AND_PW_REGEX += '|(?:' + pw + ')'
+    SPECIAL_DELIMITER_AND_PW_REGEX += '|(?i:' + pw + ')'
+# Add button/action identifiers
+for button_id in BUTTON_IDS:
+    if not button_id:
+        continue
+    SPECIAL_DELIMITER_AND_PW_REGEX += '|(?:\\[' + button_id + '\\])'
 SPECIAL_DELIMITER_AND_PW_REGEX = '(' + SPECIAL_DELIMITER_AND_PW_REGEX + ')'
-SPECIAL_DELIMITER_AND_PW_REGEX = re.compile(SPECIAL_DELIMITER_AND_PW_REGEX, flags=re.IGNORECASE)
+SPECIAL_DELIMITER_AND_PW_REGEX = re.compile(SPECIAL_DELIMITER_AND_PW_REGEX)#, flags=re.IGNORECASE)
 
 
 def convert_rtl_string(s):
