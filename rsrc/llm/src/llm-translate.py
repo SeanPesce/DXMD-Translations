@@ -1229,49 +1229,52 @@ def translate_textlists():
     global TOTAL_STRINGS
     DATA_TRANSLATED['textlists'] = list()
     textlists_orig = DATA_ORIGINAL['textlists']
-    i = 0
-    for textlist in textlists_orig:
-        i += 1
-        # if i >= 2:
-        #     # Finish early for debugging purposes
-        #     break
-        print(f'{str_color_green("[INFO]")} ({i}/{len(textlists_orig)}) Translating textlist', file=sys.stderr)
-        tl = dict()
-        tl_id = textlist.get('id', None)
-        if tl_id in SKIP_TEXTLISTS:
-            print(f'{str_color_green("[INFO]")} Skipping textlist with ID {tl_id}', file=sys.stderr)
-            TOTAL_STRINGS += len(textlist.get('content', list()))
-            continue
-        for k in textlist:
-            if k != 'content':
-                tl[k] = textlist[k]
+    try:
+        i = 0
+        for textlist in textlists_orig:
+            i += 1
+            # if i >= 2:
+            #     # Finish early for debugging purposes
+            #     break
+            print(f'{str_color_green("[INFO]")} ({i}/{len(textlists_orig)}) Translating textlist', file=sys.stderr)
+            tl = dict()
+            tl_id = textlist.get('id', None)
+            if tl_id in SKIP_TEXTLISTS:
+                print(f'{str_color_green("[INFO]")} Skipping textlist with ID {tl_id}', file=sys.stderr)
+                TOTAL_STRINGS += len(textlist.get('content', list()))
                 continue
-        tl[k] = list()
-        for data in textlist['content']:
-            translated_item = dict()
-            for kk in data:
-                if kk != 'string':
-                    translated_item[kk] = data[kk]
+            for k in textlist:
+                if k != 'content':
+                    tl[k] = textlist[k]
                     continue
-                
-                translated_item[kk] = ''
-                split_str = split_str_by_special_delimiters(data[kk])
-                if ALWAYS_SPLIT_ON_SPECIAL_DELIMS:
-                    # Split and re-build strings that use "//(1.00,2.99)\\" or "{0}" delimiters (these often get mangled by the LLM)
-                    for str_part in split_str:
-                        translated_item[kk] += translate_string(str_part)
-                else:
-                    translated_item[kk] = translate_string(data[kk])
-                    # Check that no delimiters were dropped. If they were, we force a re-translation using the split method
-                    if len(split_str) > 1:
-                        split_translated = split_str_by_special_delimiters(translated_item[kk])
-                        if len(split_translated) != len(split_str):
-                            print(f'{str_color_orange("[WARNING]")} Special string delimiter was dropped during translation. Re-translating using split string method...', file=sys.stderr)
-                            translated_item[kk] = ''
-                            for str_part in split_str:
-                                translated_item[kk] += translate_string(str_part)
-            tl[k].append(translated_item)
-        DATA_TRANSLATED['textlists'].append(tl)
+            tl[k] = list()
+            for data in textlist['content']:
+                translated_item = dict()
+                for kk in data:
+                    if kk != 'string':
+                        translated_item[kk] = data[kk]
+                        continue
+                    
+                    translated_item[kk] = ''
+                    split_str = split_str_by_special_delimiters(data[kk])
+                    if ALWAYS_SPLIT_ON_SPECIAL_DELIMS:
+                        # Split and re-build strings that use "//(1.00,2.99)\\" or "{0}" delimiters (these often get mangled by the LLM)
+                        for str_part in split_str:
+                            translated_item[kk] += translate_string(str_part)
+                    else:
+                        translated_item[kk] = translate_string(data[kk])
+                        # Check that no delimiters were dropped. If they were, we force a re-translation using the split method
+                        if len(split_str) > 1:
+                            split_translated = split_str_by_special_delimiters(translated_item[kk])
+                            if len(split_translated) != len(split_str):
+                                print(f'{str_color_orange("[WARNING]")} Special string delimiter was dropped during translation. Re-translating using split string method...', file=sys.stderr)
+                                translated_item[kk] = ''
+                                for str_part in split_str:
+                                    translated_item[kk] += translate_string(str_part)
+                tl[k].append(translated_item)
+            DATA_TRANSLATED['textlists'].append(tl)
+    except KeyboardInterrupt as err:
+        print(f'{str_color_orange("[WARNING]")} Detected {type(err).__name__} (Ctrl+C). Cancelling textlist translation', file=sys.stderr)
     return DATA_TRANSLATED['textlists']
 
 
@@ -1279,60 +1282,63 @@ def translate_textlists():
 def translate_subtitles():
     DATA_TRANSLATED['subtitles'] = list()
     subtitles_orig = DATA_ORIGINAL['subtitles']
-    i = 0
-    for subtitle in subtitles_orig:
-        i += 1
-        # if i >= 2:
-        #     # Finish early for debugging purposes
-        #     break
-        print(f'{str_color_green("[INFO]")} ({i}/{len(subtitles_orig)}) Translating subtitles', file=sys.stderr)
-        ss = dict()
-        for k in subtitle:
-            if k != 'content':
-                ss[k] = subtitle[k]
-                continue
-        ss[k] = list()
-        j = 0
-        for data in subtitle['content']:
-            j += 1
-            # if j >= 2:
+    try:
+        i = 0
+        for subtitle in subtitles_orig:
+            i += 1
+            # if i >= 2:
             #     # Finish early for debugging purposes
             #     break
-            translated_subs = dict()
-            for kk in data:
-                if kk != 'subs':
-                    translated_subs[kk] = data[kk]
+            print(f'{str_color_green("[INFO]")} ({i}/{len(subtitles_orig)}) Translating subtitles', file=sys.stderr)
+            ss = dict()
+            for k in subtitle:
+                if k != 'content':
+                    ss[k] = subtitle[k]
                     continue
-                translated_subs['subs'] = list()
-                for subs_set in data['subs']:
-                    translated_subtitle = dict()
-                    for kkkk in subs_set:
-                        if kkkk != 'string':
-                            translated_subtitle[kkkk] = subs_set[kkkk]
-                            continue
+            ss[k] = list()
+            j = 0
+            for data in subtitle['content']:
+                j += 1
+                # if j >= 2:
+                #     # Finish early for debugging purposes
+                #     break
+                translated_subs = dict()
+                for kk in data:
+                    if kk != 'subs':
+                        translated_subs[kk] = data[kk]
+                        continue
+                    translated_subs['subs'] = list()
+                    for subs_set in data['subs']:
+                        translated_subtitle = dict()
+                        for kkkk in subs_set:
+                            if kkkk != 'string':
+                                translated_subtitle[kkkk] = subs_set[kkkk]
+                                continue
+                            
+                            translated_subtitle[kkkk] = ''
+                            split_str = split_str_by_special_delimiters(subs_set[kkkk])
+                            if ALWAYS_SPLIT_ON_SPECIAL_DELIMS:
+                                # Split and re-build strings that use "//(1.00,2.99)\\" or "{0}" delimiters (these often get mangled by the LLM)
+                                for subtitle_part in split_str:
+                                    translated_subtitle[kkkk] += translate_string(subtitle_part)
+                            else:
+                                translated_subtitle[kkkk] = translate_string(subs_set[kkkk])
+                                # Check that no delimiters were dropped. If they were, we force a re-translation using the split method
+                                if len(split_str) > 1:
+                                    split_translated = split_str_by_special_delimiters(translated_subtitle[kkkk])
+                                    if len(split_translated) != len(split_str):
+                                        print(f'{str_color_orange("[WARNING]")} Timestamp delimiter was dropped during translation. Re-translating using split string method...', file=sys.stderr)
+                                        translated_subtitle[kkkk] = ''
+                                        for str_part in split_str:
+                                            translated_subtitle[kkkk] += translate_string(str_part)
+                            
+                        translated_subs[kk].append(translated_subtitle)
                         
-                        translated_subtitle[kkkk] = ''
-                        split_str = split_str_by_special_delimiters(subs_set[kkkk])
-                        if ALWAYS_SPLIT_ON_SPECIAL_DELIMS:
-                            # Split and re-build strings that use "//(1.00,2.99)\\" or "{0}" delimiters (these often get mangled by the LLM)
-                            for subtitle_part in split_str:
-                                translated_subtitle[kkkk] += translate_string(subtitle_part)
-                        else:
-                            translated_subtitle[kkkk] = translate_string(subs_set[kkkk])
-                            # Check that no delimiters were dropped. If they were, we force a re-translation using the split method
-                            if len(split_str) > 1:
-                                split_translated = split_str_by_special_delimiters(translated_subtitle[kkkk])
-                                if len(split_translated) != len(split_str):
-                                    print(f'{str_color_orange("[WARNING]")} Timestamp delimiter was dropped during translation. Re-translating using split string method...', file=sys.stderr)
-                                    translated_subtitle[kkkk] = ''
-                                    for str_part in split_str:
-                                        translated_subtitle[kkkk] += translate_string(str_part)
-                        
-                    translated_subs[kk].append(translated_subtitle)
-                    
-                #print(f'{json.dumps(data)}',file=sys.stderr)
-            ss[k].append(translated_subs)
-        DATA_TRANSLATED['subtitles'].append(ss)
+                    #print(f'{json.dumps(data)}',file=sys.stderr)
+                ss[k].append(translated_subs)
+            DATA_TRANSLATED['subtitles'].append(ss)
+    except KeyboardInterrupt as err:
+        print(f'{str_color_orange("[WARNING]")} Detected {type(err).__name__} (Ctrl+C). Cancelling subtitle translation', file=sys.stderr)
     return DATA_TRANSLATED['subtitles']
 
 
